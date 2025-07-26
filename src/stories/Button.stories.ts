@@ -7,8 +7,14 @@ const meta: Meta<typeof Button> = {
   component: Button,
   parameters: {
     cssVars: {
-      '--button-bg-color': '#f00',
-      '--button-text-color': 'dodgerblue'
+      '--button-bg-color': {
+        value: '#f00',
+        type: 'color'
+      },
+      '--button-text-color': {
+        value: 'dodgerblue',
+        type: 'color'
+      }
     }
   },
 };
