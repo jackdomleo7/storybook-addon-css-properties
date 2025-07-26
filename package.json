@@ -7,7 +7,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jackdomleo7/storybook-css-properties"
+    "url": "https://github.com/jackdomleo7/storybook-addon-css-properties"
   },
   "type": "module",
   "license": "MIT",
