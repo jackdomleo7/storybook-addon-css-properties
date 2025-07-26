@@ -9,7 +9,8 @@ const meta: Meta<typeof Button> = {
     cssVars: {
       '--button-bg-color': {
         value: '#f00',
-        type: 'color'
+        type: 'color',
+        description: 'Background color of the button'
       },
       '--button-text-color': {
         value: 'dodgerblue',

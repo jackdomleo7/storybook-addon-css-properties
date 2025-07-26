@@ -49,6 +49,7 @@ interface Parameters {
   [key: CssProperty]: {
     value: string | undefined;
     type: 'color' | 'text' | 'number';
+    description?: string;
   };
 }
 
@@ -181,6 +182,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
               placeholder={`Enter ${value.type}`}
               step={value.type === 'number' ? 1 : undefined}
             />
+            <small>{value.description}</small>
           </ListItem>
         ))}
       </List>
