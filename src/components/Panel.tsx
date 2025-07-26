@@ -1,10 +1,10 @@
 import React, { Fragment, memo, useCallback, useState } from "react";
-import { Result } from "src/types";
+import type { Result, CssProperty } from "src/types";
 import { AddonPanel } from "storybook/internal/components";
-import { useChannel } from "storybook/manager-api";
+import { useChannel, useParameter } from "storybook/manager-api";
 import { styled, useTheme } from "storybook/theming";
 
-import { EVENTS } from "../constants";
+import { EVENTS, KEY } from "../constants";
 
 interface PanelProps {
   active: boolean;
@@ -12,6 +12,10 @@ interface PanelProps {
 
 export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   const theme = useTheme();
+  const config = useParameter<{ [key: CssProperty]: string|undefined }>(
+    KEY,
+    {},
+  );
 
   // https://storybook.js.org/docs/react/addons/addons-api#useaddonstate
   const [{ divs, styled }, setState] = useState<Result>({
@@ -32,7 +36,15 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
 
   return (
     <AddonPanel {...props}>
-      <p>Your CSS Properties will be listed here...</p>
+      <>
+        <ul>
+          {Object.entries(config).map(([key, value]) => (
+            <li key={key}>
+              {key}: {value}
+            </li>
+          ))}
+        </ul>
+      </>
     </AddonPanel>
   );
 });
