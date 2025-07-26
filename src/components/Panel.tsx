@@ -6,39 +6,102 @@ import { styled, useTheme } from "storybook/theming";
 
 import { EVENTS, KEY } from "../constants";
 
+const Container = styled.div`
+  padding: 1.5rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: ${({ theme }) => theme.background.content};
+`;
+
 const List = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 `;
 
 const ListItem = styled.li`
   display: flex;
+  flex-direction: column;
+  gap: .75rem;
+`;
+
+const InputRow = styled.div`
+  display: flex;
   align-items: center;
-  padding: 8px;
-  gap: 8px;
+  gap: 1.25rem;
 `;
 
 const Label = styled.label`
-  flex: 0 0 auto;
-  min-width: 120px;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.color.defaultText};
+  min-width: 12.5rem;
+  flex-shrink: 0;
 `;
 
 const Input = styled.input`
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-size: 1.125rem;
+  padding: 1rem 1.25rem;
+  border: 2px solid ${({ theme }) => theme.color.border};
+  border-radius: .5rem;
+  background-color: ${({ theme }) => theme.background.content};
+  color: ${({ theme }) => theme.color.defaultText};
   flex: 1;
-  padding: 4px 8px;
-  border: 1px solid ${({ theme }) => theme.color.border};
-  border-radius: 4px;
+  min-height: 2rem;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  max-width: 37.5rem;
+  margin-left: auto;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.color.secondary};
+    box-shadow: 0 0 0 .1875rem ${({ theme }) => theme.color.secondary}20;
+  }
+
+  &:hover {
+    border-color: ${({ theme }) => theme.color.mediumdark};
+  }
 
   &[type="color"] {
-    padding: 2px 4px;
-    height: 32px;
+    padding: .5rem .75rem;
+    height: 3.75rem;
     cursor: pointer;
+    border-radius: .5rem;
+    
+    &::-webkit-color-swatch-wrapper {
+      padding: 0;
+      border: none;
+      border-radius: .25rem;
+      overflow: hidden;
+    }
+    
+    &::-webkit-color-swatch {
+      border: none;
+      border-radius: .25rem;
+    }
   }
 
   &[type="number"] {
-    width: 100px;
+    max-width: 12.5rem;
   }
+
+  &::placeholder {
+    color: ${({ theme }) => theme.color.mediumdark};
+    font-style: italic;
+  }
+`;
+
+const Description = styled.small`
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1rem;
+  color: ${({ theme }) => theme.color.mediumdark};
+  font-style: italic;
+  line-height: 1.4;
 `;
 
 interface PanelProps {
@@ -170,22 +233,29 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
 
   return (
     <AddonPanel {...props}>
-      <List>
-        {Object.entries(config).map(([key, value]) => (
-          <ListItem key={key}>
-            <Label htmlFor={key}>{key}:</Label>
-            <Input
-              id={key}
-              type={value.type === 'color' ? (isSixDigitHex(convertToHexadecimal(value.value)) ? 'color' : 'text') : value.type}
-              defaultValue={value.type === 'color' ? (isSixDigitHex(convertToHexadecimal(value.value)) ? convertToHexadecimal(value.value) : value.value) : value.value || ''}
-              onChange={(e) => handleInputChange(key, e.target.value)}
-              placeholder={`Enter ${value.type}`}
-              step={value.type === 'number' ? 1 : undefined}
-            />
-            <small>{value.description}</small>
-          </ListItem>
-        ))}
-      </List>
+      <Container>
+        <List>
+          {Object.entries(config).map(([key, value]) => (
+            <ListItem key={key}>
+              <InputRow>
+                <Label htmlFor={key}>{key}</Label>
+                <Input
+                  id={key}
+                  type={value.type === 'color' ? (isSixDigitHex(convertToHexadecimal(value.value)) ? 'color' : 'text') : value.type}
+                  defaultValue={value.type === 'color' ? (isSixDigitHex(convertToHexadecimal(value.value)) ? convertToHexadecimal(value.value) : value.value) : value.value || ''}
+                  onChange={(e) => handleInputChange(key, e.target.value)}
+                  placeholder={`Enter ${value.type}`}
+                  step={value.type === 'number' ? 1 : undefined}
+                  aria-describedby={`id-${key}-description`}
+                />
+              </InputRow>
+              {value.description && (
+                <Description id={`id-${key}-description`}>{value.description}</Description>
+              )}
+            </ListItem>
+          ))}
+        </List>
+      </Container>
     </AddonPanel>
   );
 });
