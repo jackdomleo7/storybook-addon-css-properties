@@ -44,9 +44,7 @@
     "start": "run-p build:watch \"storybook --quiet\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepublishOnly": "echo \"Please run npm run release instead\" && exit 1",
-    "prerelease": "zx scripts/prepublish-checks.js",
-    "release": "npm run build && auto shipit",
+    "prepublishOnly": "pnpm build && zx scripts/prepublish-checks.js",
     "prepack": "pnpm build"
   },
   "dependencies": {
@@ -59,7 +57,6 @@
     "@types/react": "^18.2.65",
     "@types/react-dom": "^18.2.21",
     "@vitejs/plugin-react": "^4.2.1",
-    "auto": "11.1.1",
     "boxen": "^7.1.1",
     "npm-run-all2": "^6.2.3",
     "prettier": "^3.3.3",
