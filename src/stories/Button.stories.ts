@@ -7,14 +7,11 @@ const meta: Meta<typeof Button> = {
   parameters: {
     cssVars: {
       '--button-bg-color': {
-        value: undefined,
         control: 'color',
         default: '#1ea7fd',
         description: 'Background color of the button'
       },
       '--button-text-color': {
-        value: undefined,
-        control: 'color',
         default: '#fff',
         description: 'Text color of the button'
       }
@@ -31,12 +28,10 @@ export const Custom: Story = {
   parameters: {
     cssVars: {
       '--button-bg-color': {
-        value: '#f80',
-        control: 'color'
+        value: '#f80'
       },
       '--button-text-color': {
-        value: 'ghostwhite',
-        control: 'color'
+        value: 'ghostwhite'
       }
     }
   }
