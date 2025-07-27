@@ -2,7 +2,7 @@ import type { Renderer, DecoratorFunction } from "storybook/internal/types";
 import { useChannel } from "storybook/preview-api";
 import { EVENTS } from "./constants";
 
-export const withRoundTrip: DecoratorFunction<Renderer> = (storyFn, context) => {
+export const withRoundTrip: DecoratorFunction<Renderer> = (storyFn) => {
   useChannel({
     [EVENTS.REQUEST]: (styles: Record<string, string>) => {
       const rootElement = document.querySelector<HTMLElement>('#storybook-root > *');

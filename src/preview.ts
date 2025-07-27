@@ -9,7 +9,7 @@
  * https://storybook.js.org/docs/react/writing-stories/decorators
  */
 import type { ProjectAnnotations, Renderer } from "storybook/internal/types";
-import { EVENTS, KEY } from "./constants";
+import { KEY } from "./constants";
 import { withRoundTrip } from "./withRoundTrip";
 
 /**
