@@ -73,3 +73,5 @@ export default meta;
 `type`: The type of the CSS property - `"text"|"color"|"number"`. This will dictate which input will show in the control panel. If `"color"` is chosen, but the provided value is not a valid hexadecimal, RGB or HSL value, this will default back to `"text"`. NOTE: Keyword colours are not supported with `"color"`, use `"text"` instead.
 
 `description`: A short description of the CSS property.
+
+[See the example setup](./src/stories/Button.stories.ts)

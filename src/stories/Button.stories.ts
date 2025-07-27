@@ -1,20 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button } from "./Button";
 
-// More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta: Meta<typeof Button> = {
   title: "Example/Button",
   component: Button,
   parameters: {
     cssVars: {
       '--button-bg-color': {
-        value: '#f00',
+        value: undefined,
         type: 'color',
         description: 'Background color of the button'
       },
       '--button-text-color': {
-        value: 'dodgerblue',
-        type: 'color'
+        value: undefined,
+        type: 'color',
+        description: 'Text color of the button'
       }
     }
   },
@@ -23,5 +23,19 @@ const meta: Meta<typeof Button> = {
 export default meta;
 type Story = StoryObj<typeof Button>;
 
-// More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 export const Default: Story = {};
+
+export const Custom: Story = {
+  parameters: {
+    cssVars: {
+      '--button-bg-color': {
+        value: '#f80',
+        type: 'color'
+      },
+      '--button-text-color': {
+        value: 'ghostwhite',
+        type: 'color'
+      }
+    }
+  }
+};
