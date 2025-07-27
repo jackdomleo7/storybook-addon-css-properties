@@ -53,13 +53,15 @@ const meta: Meta<typeof Button> = {
     myAddon: {
       cssVars: {
         '--my-custom-var-1': {
-          value: undefined,
-          type: 'text',
+          value: undefined, // Or don't specify
+          control: 'text', // Default is "text" so this can be omitted
+          default: '#1ea7fd',
           description: 'This CSS property will appear as the default'
         },
         '--my-custom-var-2': {
           value: '#000',
-          type: 'color',
+          control: 'color',
+          default: '#fff',
           description: 'This CSS property will appear as #000, overriding the default'
         }
       }
@@ -68,13 +70,28 @@ const meta: Meta<typeof Button> = {
 };
 
 export default meta;
+
+export const Custom: Story = {
+  parameters: {
+    cssVars: {
+      '--button-bg-color': {
+        value: '#f80' // You do not need to specify `control`, `default` or `description` again, but you can if you need to
+      },
+      '--button-text-color': {
+        value: 'ghostwhite' // You do not need to specify `control`, `default` or `description` again, but you can if you need to
+      }
+    }
+  }
+};
 ```
 
 `cssVars` is a key-value object that defines your component's CSS variables. The key is the name of the CSS property **exactly** as it appears in your code. The value is an object of configuration settings.
 
-`value`: Set this to `undefined` to use the default value and simply register the CSS property to Storybook. This is necessary otherwise Storybook won't show the CSS property in the control panel. Or you can set this to any value to set a default override value.
+`value`: Set this to any value to set a default override value.
 
-`type`: The type of the CSS property - `"text"|"color"|"number"`. This will dictate which input will show in the control panel. If `"color"` is chosen, but the provided value is not a valid hexadecimal, RGB or HSL value, this will default back to `"text"`. NOTE: Keyword colours are not supported with `"color"`, use `"text"` instead.
+`control`: The type of the CSS property control - `"text"|"color"|"number"`.
+
+`default`: The default value of the property (for documentation purposes only).
 
 `description`: A short description of the CSS property.
 
