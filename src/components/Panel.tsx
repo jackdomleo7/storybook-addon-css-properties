@@ -484,10 +484,10 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
         <Header>
           <div><p>Clearing will use the component's default values | Resetting will use the story's default values</p></div>
           <ButtonGroup>
-            <UtilityButton onClick={handleClearAll} title="Use the component's default values">
+            <UtilityButton onClick={handleClearAll} title="Use the component's default values" aria-controls={Object.entries(config).map(([key]) => key).join(' ')}>
               Clear all
             </UtilityButton>
-            <UtilityButton onClick={handleResetAll} title="Use the story's default values">
+            <UtilityButton onClick={handleResetAll} title="Use the story's default values" aria-controls={Object.entries(config).map(([key]) => key).join(' ')}>
               Reset all
             </UtilityButton>
           </ButtonGroup>
@@ -540,20 +540,20 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                       onChange={(e) => handleInputChange(key, e.target.value)}
                       placeholder={`Enter ${value.type}`}
                       step={value.type === 'number' ? 1 : undefined}
-                      aria-describedby={`id-${key}-description`}
+                      aria-describedby={`${key}-description`}
                     />
                   )}
                   <ButtonGroup>
-                    <UtilityButton onClick={() => handleClear(key)} title="Use the component's default value">
+                    <UtilityButton onClick={() => handleClear(key)} title="Use the component's default value" aria-controls={key}>
                       Clear
                     </UtilityButton>
-                    <UtilityButton onClick={() => handleReset(key)} title="Use the story's default value">
+                    <UtilityButton onClick={() => handleReset(key)} title="Use the story's default value" aria-controls={key}>
                       Reset
                     </UtilityButton>
                   </ButtonGroup>
                 </InputRow>
                 {value.description && (
-                  <Description id={`id-${key}-description`}>{value.description}</Description>
+                  <Description id={`${key}-description`}>{value.description}</Description>
                 )}
               </ListItem>
             );
