@@ -1,6 +1,6 @@
 {
   "name": "storybook-addon-css-properties",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Edit CSS properties defined in your component to see how stories react",
   "keywords": [
     "storybook-addon",
