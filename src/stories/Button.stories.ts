@@ -9,11 +9,13 @@ const meta: Meta<typeof Button> = {
       '--button-bg-color': {
         value: undefined,
         control: 'color',
+        default: '#1ea7fd',
         description: 'Background color of the button'
       },
       '--button-text-color': {
         value: undefined,
         control: 'color',
+        default: '#fff',
         description: 'Text color of the button'
       }
     }

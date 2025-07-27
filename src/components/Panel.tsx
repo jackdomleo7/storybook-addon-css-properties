@@ -223,6 +223,7 @@ interface PanelProps {
 interface Parameter {
   value: string | undefined;
   control: 'color' | 'text' | 'number';
+  default?: string;
   description?: string;
 }
 
@@ -552,6 +553,9 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                     </UtilityButton>
                   </ButtonGroup>
                 </InputRow>
+                {value.default && (
+                  <Description>Default: {value.default}</Description>
+                )}
                 {value.description && (
                   <Description id={`${key}-description`}>{value.description}</Description>
                 )}
