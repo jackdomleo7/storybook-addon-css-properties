@@ -3,7 +3,12 @@
   "version": "0.0.0",
   "description": "Edit CSS properties defined in your component to see how stories react",
   "keywords": [
-    "storybook-addons", "css", "properties", "custom", "variables", "storybook-addons"
+    "storybook-addons",
+    "css",
+    "properties",
+    "custom",
+    "variables",
+    "storybook-addons"
   ],
   "repository": {
     "type": "git",
@@ -49,7 +54,7 @@
   "devDependencies": {
     "@storybook/addon-docs": "^9.0.0",
     "@storybook/react-vite": "^9.0.0",
-    "@types/node": "^22",
+    "@types/node": "^20.19.9",
     "@types/react": "^18.2.65",
     "@types/react-dom": "^18.2.21",
     "@vitejs/plugin-react": "^4.2.1",
@@ -70,6 +75,9 @@
   "peerDependencies": {
     "storybook": "^9.0.0"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -87,7 +95,15 @@
   "storybook": {
     "displayName": "CSS Properties Controls",
     "supportedFrameworks": [
-      "react", "vue", "angular", "web-components", "ember", "html", "svelte", "preact", "react-native"
+      "react",
+      "vue",
+      "angular",
+      "web-components",
+      "ember",
+      "html",
+      "svelte",
+      "preact",
+      "react-native"
     ],
     "icon": "https://user-images.githubusercontent.com/321738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png"
   }
