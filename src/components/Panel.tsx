@@ -72,6 +72,35 @@ const InputRow = styled.div`
   gap: 1.25rem;
 `;
 
+const ColorInputGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  max-width: 37.5rem;
+  margin-left: auto;
+`;
+
+const ColorRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+const OpacityRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+const OpacityLabel = styled.span`
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.color.mediumdark};
+  min-width: 4rem;
+  flex-shrink: 0;
+`;
+
 const Label = styled.label`
   font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
   font-size: 1.125rem;
@@ -129,6 +158,50 @@ const Input = styled.input`
     max-width: 12.5rem;
   }
 
+  &[type="range"] {
+    padding: 0;
+    height: 2rem;
+    background: transparent;
+    cursor: pointer;
+    
+    &::-webkit-slider-track {
+      width: 100%;
+      height: 0.5rem;
+      background: linear-gradient(90deg, transparent 0%, ${({ theme }) => theme.color.defaultText} 100%);
+      border-radius: 0.25rem;
+      border: 1px solid ${({ theme }) => theme.color.border};
+    }
+    
+    &::-webkit-slider-thumb {
+      appearance: none;
+      height: 1.25rem;
+      width: 1.25rem;
+      border-radius: 50%;
+      background: ${({ theme }) => theme.color.defaultText};
+      border: 2px solid ${({ theme }) => theme.background.content};
+      box-shadow: 0 0 0 1px ${({ theme }) => theme.color.border};
+      cursor: pointer;
+    }
+    
+    &::-moz-range-track {
+      width: 100%;
+      height: 0.5rem;
+      background: linear-gradient(90deg, transparent 0%, ${({ theme }) => theme.color.defaultText} 100%);
+      border-radius: 0.25rem;
+      border: 1px solid ${({ theme }) => theme.color.border};
+    }
+    
+    &::-moz-range-thumb {
+      height: 1.25rem;
+      width: 1.25rem;
+      border-radius: 50%;
+      background: ${({ theme }) => theme.color.defaultText};
+      border: 2px solid ${({ theme }) => theme.background.content};
+      box-shadow: 0 0 0 1px ${({ theme }) => theme.color.border};
+      cursor: pointer;
+    }
+  }
+
   &::placeholder {
     color: ${({ theme }) => theme.color.mediumdark};
     font-style: italic;
@@ -165,25 +238,105 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   );
   const emit = useChannel({});
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+  const opacityRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   // Apply initial values
   Object.entries(config).forEach(([key, value]) => {
     emit(EVENTS.REQUEST, { [key]: value.value });
   });
 
+  const parseColorWithOpacity = useCallback((colorValue: string | undefined) => {
+    if (!colorValue) return { color: '#000000', opacity: 1 };
+    
+    const cleanColor = colorValue.trim().toLowerCase();
+    
+    // Check for RGBA
+    const rgbaMatch = cleanColor.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)$/);
+    if (rgbaMatch && rgbaMatch[1] && rgbaMatch[2] && rgbaMatch[3] && rgbaMatch[4]) {
+      const r = parseInt(rgbaMatch[1], 10);
+      const g = parseInt(rgbaMatch[2], 10);
+      const b = parseInt(rgbaMatch[3], 10);
+      const a = parseFloat(rgbaMatch[4]);
+      
+      if (r <= 255 && g <= 255 && b <= 255 && a >= 0 && a <= 1) {
+        const toHex = (n: number) => n.toString(16).padStart(2, '0');
+        return { color: `#${toHex(r)}${toHex(g)}${toHex(b)}`, opacity: a };
+      }
+    }
+    
+    // Check for HSLA
+    const hslaMatch = cleanColor.match(/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d.]+)\s*\)$/);
+    if (hslaMatch && hslaMatch[1] && hslaMatch[2] && hslaMatch[3] && hslaMatch[4]) {
+      const h = parseInt(hslaMatch[1], 10);
+      const s = parseInt(hslaMatch[2], 10);
+      const l = parseInt(hslaMatch[3], 10);
+      const a = parseFloat(hslaMatch[4]);
+      
+      if (h <= 360 && s <= 100 && l <= 100 && a >= 0 && a <= 1) {
+        const hexColor = convertHslToHex(h, s, l);
+        if (hexColor) {
+          return { color: hexColor, opacity: a };
+        }
+      }
+    }
+    
+    // Try to convert to hex for color picker
+    const hexColor = convertToHexadecimal(colorValue);
+    if (hexColor && isSixDigitHex(hexColor)) {
+      return { color: hexColor, opacity: 1 };
+    }
+    
+    // Fallback for non-convertible colors
+    return { color: colorValue, opacity: 1 };
+  }, []);
+
+  const combineColorAndOpacity = useCallback((color: string, opacity: number) => {
+    if (opacity === 1) {
+      return color;
+    }
+    
+    // Convert hex to rgba
+    const hexMatch = color.match(/^#([0-9a-fA-F]{6})$/);
+    if (hexMatch && hexMatch[1]) {
+      const hex = hexMatch[1];
+      const r = parseInt(hex.substr(0, 2), 16);
+      const g = parseInt(hex.substr(2, 2), 16);
+      const b = parseInt(hex.substr(4, 2), 16);
+      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+    
+    return color;
+  }, []);
+
   const handleInputChange = useCallback((key: string, value: string) => {
     emit(EVENTS.REQUEST, { [key]: value });
   }, [emit]);
 
+  const handleColorChange = useCallback((key: string, color: string) => {
+    const opacityInput = opacityRefs.current[key];
+    const opacity = opacityInput ? parseFloat(opacityInput.value) : 1;
+    const finalValue = combineColorAndOpacity(color, opacity);
+    emit(EVENTS.REQUEST, { [key]: finalValue });
+  }, [emit, combineColorAndOpacity]);
+
+  const handleOpacityChange = useCallback((key: string, opacity: number) => {
+    const colorInput = inputRefs.current[key];
+    const color = colorInput ? colorInput.value : '#000000';
+    const finalValue = combineColorAndOpacity(color, opacity);
+    emit(EVENTS.REQUEST, { [key]: finalValue });
+  }, [emit, combineColorAndOpacity]);
+
   const handleClear = useCallback((key: string) => {
     const inputElement = inputRefs.current[key];
-      if (inputElement) {
-        // Clear the input value
-        inputElement.value = '';
-        // Emit the clear event
-        emit(EVENTS.REQUEST, { [key]: '' });
+    const opacityElement = opacityRefs.current[key];
+    if (inputElement) {
+      inputElement.value = '';
+      if (opacityElement) {
+        opacityElement.value = '1';
       }
-  }, [config, emit]);
+      emit(EVENTS.REQUEST, { [key]: '' });
+    }
+  }, [emit]);
 
   const handleClearAll = useCallback(() => {
     Object.keys(config).forEach(key => {
@@ -193,34 +346,66 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
 
   const handleReset = useCallback((key: string) => {
     const inputElement = inputRefs.current[key];
+    const opacityElement = opacityRefs.current[key];
     const originalValue = (config as Record<string, Parameter>)[key]?.value || '';
     const inputType = (config as Record<string, Parameter>)[key]?.type;
     
     if (inputElement) {
-      // For color inputs, we need to handle the value conversion
-      if (inputType === 'color' && inputElement.type === 'color') {
-        const hexValue = convertToHexadecimal(originalValue);
-        if (hexValue && isSixDigitHex(hexValue)) {
-          inputElement.value = hexValue;
+      if (inputType === 'color') {
+        const { color, opacity } = parseColorWithOpacity(originalValue);
+        
+        if (inputElement.type === 'color' && isSixDigitHex(color)) {
+          inputElement.value = color;
         } else {
-          // If we can't convert to hex, the input will become a text input on next render
           inputElement.value = originalValue;
         }
+        
+        if (opacityElement) {
+          opacityElement.value = opacity.toString();
+        }
       } else {
-        // For text and number inputs, set directly
         inputElement.value = originalValue;
       }
       
-      // Emit the reset event with original value
       emit(EVENTS.REQUEST, { [key]: originalValue });
     }
-  }, [config, emit]);
+  }, [config, emit, parseColorWithOpacity]);
 
   const handleResetAll = useCallback(() => {
     Object.entries(config).forEach(([key, value]) => {
       handleReset(key);
     });
   }, [config, handleReset]);
+
+  const convertHslToHex = useCallback((h: number, s: number, l: number): string | null => {
+    const hue = h / 360;
+    const saturation = s / 100;
+    const lightness = l / 100;
+    
+    const hue2rgb = (p: number, q: number, t: number): number => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    };
+    
+    let r: number, g: number, b: number;
+    
+    if (saturation === 0) {
+      r = g = b = lightness;
+    } else {
+      const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+      const p = 2 * lightness - q;
+      r = hue2rgb(p, q, hue + 1/3);
+      g = hue2rgb(p, q, hue);
+      b = hue2rgb(p, q, hue - 1/3);
+    }
+    
+    const toHex = (n: number) => Math.round(n * 255).toString(16).padStart(2, '0');
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }, []);
 
   function convertToHexadecimal(color: string): string | null {
     // Remove whitespace and convert to lowercase
@@ -274,34 +459,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
       // Validate HSL values
       if (h > 360 || s > 100 || l > 100) return null;
       
-      // Convert HSL to RGB
-      const hue = h / 360;
-      const saturation = s / 100;
-      const lightness = l / 100;
-      
-      const hue2rgb = (p: number, q: number, t: number): number => {
-        if (t < 0) t += 1;
-        if (t > 1) t -= 1;
-        if (t < 1/6) return p + (q - p) * 6 * t;
-        if (t < 1/2) return q;
-        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-        return p;
-      };
-      
-      let r: number, g: number, b: number;
-      
-      if (saturation === 0) {
-        r = g = b = lightness; // achromatic
-      } else {
-        const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
-        const p = 2 * lightness - q;
-        r = hue2rgb(p, q, hue + 1/3);
-        g = hue2rgb(p, q, hue);
-        b = hue2rgb(p, q, hue - 1/3);
-      }
-      
-      const toHex = (n: number) => Math.round(n * 255).toString(16).padStart(2, '0');
-      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+      return convertHslToHex(h, s, l);
     }
     
     // Check for HSLA (has alpha channel - return null)
@@ -335,34 +493,71 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
           </ButtonGroup>
         </Header>
         <List>
-          {Object.entries(config).map(([key, value]) => (
-            <ListItem key={key}>
-              <InputRow>
-                <Label htmlFor={key}>{key}</Label>
-                <Input
-                  ref={(el) => { inputRefs.current[key] = el; }}
-                  id={key}
-                  type={value.type === 'color' ? (isSixDigitHex(convertToHexadecimal(value.value)) ? 'color' : 'text') : value.type}
-                  defaultValue={value.type === 'color' ? (isSixDigitHex(convertToHexadecimal(value.value)) ? convertToHexadecimal(value.value) : value.value) : value.value || ''}
-                  onChange={(e) => handleInputChange(key, e.target.value)}
-                  placeholder={`Enter ${value.type}`}
-                  step={value.type === 'number' ? 1 : undefined}
-                  aria-describedby={`id-${key}-description`}
-                />
-                <ButtonGroup>
-                  <UtilityButton onClick={() => handleClear(key)} title="Use the component's default value">
-                    Clear
-                  </UtilityButton>
-                  <UtilityButton onClick={() => handleReset(key)} title="Use the story's default value">
-                    Reset
-                  </UtilityButton>
-                </ButtonGroup>
-              </InputRow>
-              {value.description && (
-                <Description id={`id-${key}-description`}>{value.description}</Description>
-              )}
-            </ListItem>
-          ))}
+          {Object.entries(config).map(([key, value]) => {
+            const isColorType = value.type === 'color';
+            const { color, opacity } = isColorType ? parseColorWithOpacity(value.value) : { color: '', opacity: 1 };
+            const canUseColorPicker = isColorType && isSixDigitHex(color);
+
+            return (
+              <ListItem key={key}>
+                <InputRow>
+                  <Label htmlFor={key}>{key}</Label>
+                  {isColorType ? (
+                    <ColorInputGroup>
+                      <ColorRow>
+                        <Input
+                          ref={(el) => { inputRefs.current[key] = el; }}
+                          id={key}
+                          type={canUseColorPicker ? 'color' : 'text'}
+                          defaultValue={canUseColorPicker ? color : value.value || ''}
+                          onChange={(e) => handleColorChange(key, e.target.value)}
+                          placeholder="Enter color"
+                          aria-describedby={`id-${key}-description`}
+                        />
+                      </ColorRow>
+                      {canUseColorPicker && (
+                        <OpacityRow>
+                          <OpacityLabel>Opacity:</OpacityLabel>
+                          <Input
+                            ref={(el) => { opacityRefs.current[key] = el; }}
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            defaultValue={opacity.toString()}
+                            onChange={(e) => handleOpacityChange(key, parseFloat(e.target.value))}
+                            aria-label={`${key} opacity`}
+                          />
+                        </OpacityRow>
+                      )}
+                    </ColorInputGroup>
+                  ) : (
+                    <Input
+                      ref={(el) => { inputRefs.current[key] = el; }}
+                      id={key}
+                      type={value.type}
+                      defaultValue={value.value || ''}
+                      onChange={(e) => handleInputChange(key, e.target.value)}
+                      placeholder={`Enter ${value.type}`}
+                      step={value.type === 'number' ? 1 : undefined}
+                      aria-describedby={`id-${key}-description`}
+                    />
+                  )}
+                  <ButtonGroup>
+                    <UtilityButton onClick={() => handleClear(key)} title="Use the component's default value">
+                      Clear
+                    </UtilityButton>
+                    <UtilityButton onClick={() => handleReset(key)} title="Use the story's default value">
+                      Reset
+                    </UtilityButton>
+                  </ButtonGroup>
+                </InputRow>
+                {value.description && (
+                  <Description id={`id-${key}-description`}>{value.description}</Description>
+                )}
+              </ListItem>
+            );
+          })}
         </List>
       </Container>
     </AddonPanel>
