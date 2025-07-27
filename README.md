@@ -2,6 +2,8 @@
 
 Edit CSS properties defined in your component to see how stories react
 
+[See example](https://jackdomleo7.github.io/storybook-addon-css-properties)
+
 ## Installation
 
 First, install the package.
