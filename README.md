@@ -68,7 +68,7 @@ export default meta;
 
 `cssVars` is a key-value object that defines your component's CSS variables. The key is the name of the CSS property **exactly** as it appears in your code. The value is an object of configuration settings.
 
-`value`: Set this to undefined to use the default value and simply register the CSS property to Storybook. This is necessary otherwise Storybook won't show the CSS property in the control panel. Or you can set this to any value to set a default override value.
+`value`: Set this to `undefined` to use the default value and simply register the CSS property to Storybook. This is necessary otherwise Storybook won't show the CSS property in the control panel. Or you can set this to any value to set a default override value.
 
 `type`: The type of the CSS property - `"text"|"color"|"number"`. This will dictate which input will show in the control panel. If `"color"` is chosen, but the provided value is not a valid hexadecimal, RGB or HSL value, this will default back to `"text"`. NOTE: Keyword colours are not supported with `"color"`, use `"text"` instead.
 
