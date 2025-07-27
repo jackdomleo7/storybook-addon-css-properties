@@ -222,7 +222,7 @@ interface PanelProps {
 
 interface Parameter {
   value: string | undefined;
-  type: 'color' | 'text' | 'number';
+  control: 'color' | 'text' | 'number';
   description?: string;
 }
 
@@ -348,7 +348,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     const inputElement = inputRefs.current[key];
     const opacityElement = opacityRefs.current[key];
     const originalValue = (config as Record<string, Parameter>)[key]?.value || '';
-    const inputType = (config as Record<string, Parameter>)[key]?.type;
+    const inputType = (config as Record<string, Parameter>)[key]?.control;
     
     if (inputElement) {
       if (inputType === 'color') {
@@ -494,7 +494,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
         </Header>
         <List>
           {Object.entries(config).map(([key, value]) => {
-            const isColorType = value.type === 'color';
+            const isColorType = value.control === 'color';
             const { color, opacity } = isColorType ? parseColorWithOpacity(value.value) : { color: '', opacity: 1 };
             const canUseColorPicker = isColorType && isSixDigitHex(color);
 
@@ -535,11 +535,11 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                     <Input
                       ref={(el) => { inputRefs.current[key] = el; }}
                       id={key}
-                      type={value.type}
+                      type={value.control}
                       defaultValue={value.value || ''}
                       onChange={(e) => handleInputChange(key, e.target.value)}
-                      placeholder={`Enter ${value.type}`}
-                      step={value.type === 'number' ? 1 : undefined}
+                      placeholder={`Enter ${value.control}`}
+                      step={value.control === 'number' ? 1 : undefined}
                       aria-describedby={`${key}-description`}
                     />
                   )}
