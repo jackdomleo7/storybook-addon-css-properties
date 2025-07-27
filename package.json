@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "description": "Edit CSS properties defined in your component to see how stories react",
   "keywords": [
+    "storybook-addon",
     "storybook-addons",
     "css",
     "properties",
     "custom",
-    "variables",
-    "storybook-addons"
+    "variables"
   ],
   "repository": {
     "type": "git",
