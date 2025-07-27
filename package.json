@@ -43,9 +43,10 @@
     "build:watch": "npm run build -- --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "run-p build:watch \"storybook --quiet\"",
-    "prepublishOnly": "zx scripts/prepublish-checks.js",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "prepublishOnly": "pnpm build && zx scripts/prepublish-checks.js",
+    "prepack": "pnpm build"
   },
   "dependencies": {
     "@storybook/icons": "^1.4.0"
