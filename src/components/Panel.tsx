@@ -19,6 +19,11 @@ const Header = styled.div`
   margin-bottom: 2rem;
 `;
 
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`;
+
 const UtilityButton = styled.button`
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 0.875rem;
@@ -142,12 +147,14 @@ interface PanelProps {
   active: boolean;
 }
 
+interface Parameter {
+  value: string | undefined;
+  type: 'color' | 'text' | 'number';
+  description?: string;
+}
+
 interface Parameters {
-  [key: CssProperty]: {
-    value: string | undefined;
-    type: 'color' | 'text' | 'number';
-    description?: string;
-  };
+  [key: CssProperty]: Parameter;
 }
 
 export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
@@ -182,7 +189,38 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     Object.keys(config).forEach(key => {
       handleClear(key);
     });
+  }, [config, handleClear]);
+
+  const handleReset = useCallback((key: string) => {
+    const inputElement = inputRefs.current[key];
+    const originalValue = (config as Record<string, Parameter>)[key]?.value || '';
+    const inputType = (config as Record<string, Parameter>)[key]?.type;
+    
+    if (inputElement) {
+      // For color inputs, we need to handle the value conversion
+      if (inputType === 'color' && inputElement.type === 'color') {
+        const hexValue = convertToHexadecimal(originalValue);
+        if (hexValue && isSixDigitHex(hexValue)) {
+          inputElement.value = hexValue;
+        } else {
+          // If we can't convert to hex, the input will become a text input on next render
+          inputElement.value = originalValue;
+        }
+      } else {
+        // For text and number inputs, set directly
+        inputElement.value = originalValue;
+      }
+      
+      // Emit the reset event with original value
+      emit(EVENTS.REQUEST, { [key]: originalValue });
+    }
   }, [config, emit]);
+
+  const handleResetAll = useCallback(() => {
+    Object.entries(config).forEach(([key, value]) => {
+      handleReset(key);
+    });
+  }, [config, handleReset]);
 
   function convertToHexadecimal(color: string): string | null {
     // Remove whitespace and convert to lowercase
@@ -286,10 +324,15 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     <AddonPanel {...props}>
       <Container>
         <Header>
-          <div><p>Clear will reset to the component's default values</p></div>
-          <UtilityButton onClick={handleClearAll}>
-            Clear all
-          </UtilityButton>
+          <div><p>Clearing will use the component's default values | Resetting will use the story's default values</p></div>
+          <ButtonGroup>
+            <UtilityButton onClick={handleClearAll} title="Use the component's default values">
+              Clear all
+            </UtilityButton>
+            <UtilityButton onClick={handleResetAll} title="Use the story's default values">
+              Reset all
+            </UtilityButton>
+          </ButtonGroup>
         </Header>
         <List>
           {Object.entries(config).map(([key, value]) => (
@@ -306,9 +349,14 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                   step={value.type === 'number' ? 1 : undefined}
                   aria-describedby={`id-${key}-description`}
                 />
-                <UtilityButton onClick={() => handleClear(key)}>
-                  Clear
-                </UtilityButton>
+                <ButtonGroup>
+                  <UtilityButton onClick={() => handleClear(key)} title="Use the component's default value">
+                    Clear
+                  </UtilityButton>
+                  <UtilityButton onClick={() => handleReset(key)} title="Use the story's default value">
+                    Reset
+                  </UtilityButton>
+                </ButtonGroup>
               </InputRow>
               {value.description && (
                 <Description id={`id-${key}-description`}>{value.description}</Description>
