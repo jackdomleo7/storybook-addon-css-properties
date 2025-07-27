@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect } from "react";
+import React, { memo, useCallback, useRef } from "react";
 import type { CssProperty } from "src/types";
 import { AddonPanel } from "storybook/internal/components";
 import { useChannel, useParameter } from "storybook/manager-api";
@@ -10,6 +10,40 @@ const Container = styled.div`
   padding: 1.5rem;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: ${({ theme }) => theme.background.content};
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+`;
+
+const UtilityButton = styled.button`
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border: 1px solid ${({ theme }) => theme.color.border};
+  border-radius: 0.375rem;
+  background-color: ${({ theme }) => theme.background.content};
+  color: ${({ theme }) => theme.color.defaultText};
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.color.lighter};
+  }
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.color.secondary};
+    box-shadow: 0 0 0 0.1875rem ${({ theme }) => theme.color.secondary}20;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
 `;
 
 const List = styled.ul`
@@ -123,6 +157,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     {},
   );
   const emit = useChannel({});
+  const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   // Apply initial values
   Object.entries(config).forEach(([key, value]) => {
@@ -132,6 +167,22 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   const handleInputChange = useCallback((key: string, value: string) => {
     emit(EVENTS.REQUEST, { [key]: value });
   }, [emit]);
+
+  const handleClear = useCallback((key: string) => {
+    const inputElement = inputRefs.current[key];
+      if (inputElement) {
+        // Clear the input value
+        inputElement.value = '';
+        // Emit the clear event
+        emit(EVENTS.REQUEST, { [key]: '' });
+      }
+  }, [config, emit]);
+
+  const handleClearAll = useCallback(() => {
+    Object.keys(config).forEach(key => {
+      handleClear(key);
+    });
+  }, [config, emit]);
 
   function convertToHexadecimal(color: string): string | null {
     // Remove whitespace and convert to lowercase
@@ -234,12 +285,19 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   return (
     <AddonPanel {...props}>
       <Container>
+        <Header>
+          <div><p>Clear will reset to the component's default values</p></div>
+          <UtilityButton onClick={handleClearAll}>
+            Clear all
+          </UtilityButton>
+        </Header>
         <List>
           {Object.entries(config).map(([key, value]) => (
             <ListItem key={key}>
               <InputRow>
                 <Label htmlFor={key}>{key}</Label>
                 <Input
+                  ref={(el) => { inputRefs.current[key] = el; }}
                   id={key}
                   type={value.type === 'color' ? (isSixDigitHex(convertToHexadecimal(value.value)) ? 'color' : 'text') : value.type}
                   defaultValue={value.type === 'color' ? (isSixDigitHex(convertToHexadecimal(value.value)) ? convertToHexadecimal(value.value) : value.value) : value.value || ''}
@@ -248,6 +306,9 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                   step={value.type === 'number' ? 1 : undefined}
                   aria-describedby={`id-${key}-description`}
                 />
+                <UtilityButton onClick={() => handleClear(key)}>
+                  Clear
+                </UtilityButton>
               </InputRow>
               {value.description && (
                 <Description id={`id-${key}-description`}>{value.description}</Description>
