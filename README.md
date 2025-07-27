@@ -6,6 +6,10 @@ Edit CSS properties defined in your component to see how stories react
 
 ## Installation
 
+Storybook compatibility:
+- Storybook &lt;v8 → Unsupported
+- Storybook v9 → storybook-addon-css-properties v0.x
+
 First, install the package.
 
 ```sh
