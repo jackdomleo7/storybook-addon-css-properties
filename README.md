@@ -96,3 +96,12 @@ export const Custom: Story = {
 `description`: A short description of the CSS property.
 
 [See the example setup](./src/stories/Button.stories.ts)
+
+_Why set CSS properties manually? Can't the addon detect them automatically?_
+
+In theory, yes — but it's tricky.
+
+- CSS properties can be set in multiple ways (HTML, JS, CSS), overridden, or include fallbacks. Automatic detection risks incorrect assumptions.
+- Each project uses CSS differently. You may not want all properties exposed — e.g. `--brand-color` could stay fixed, while `--button-background` might be customizable.
+
+Manual selection gives you control and flexibility, even if it takes a bit more effort.
