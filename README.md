@@ -93,6 +93,35 @@ export const Custom: Story = {
 
 `description`: A short description of the CSS property.
 
+### Advanced Configuration
+
+For complex story structures where the addon can't automatically identify the correct element to apply CSS variables to, you can specify a target selector:
+
+```ts
+export const MyStory: Story = {
+  parameters: {
+    cssVarsTarget: '.my-component', // CSS selector to target within the story
+    cssVars: {
+      '--my-var': { value: 'red' }
+    }
+  }
+};
+```
+
+The addon will automatically try to find the best element to apply CSS variables to, but the `cssVarsTarget` parameter gives you full control when needed.
+
+### Conditionally Rendered Components
+
+The addon automatically handles components that are conditionally rendered (e.g., components that show/hide based on state or user interaction). It uses a `MutationObserver` to watch for DOM changes and will automatically apply CSS variables to components that appear after the initial render.
+
+This works seamlessly with:
+- Toggle components that show/hide content
+- Modal and popup components
+- Components rendered after user interactions
+- Lazy-loaded components
+
+No additional configuration is needed - the addon will detect when new elements are added to the DOM and apply the appropriate CSS variables.
+
 [See the example setup](./src/stories/Button.stories.ts)
 
 _Why set CSS properties manually? Can't the addon detect them automatically?_
