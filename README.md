@@ -50,20 +50,18 @@ import { Button } from './Button';
 const meta: Meta<typeof Button> = {
   component: Button,
   parameters: {
-    myAddon: {
-      cssVars: {
-        '--my-custom-var-1': {
-          value: undefined, // Or don't specify
-          control: 'text', // Default is "text" so this can be omitted
-          default: '#1ea7fd',
-          description: 'This CSS property will appear as the default'
-        },
-        '--my-custom-var-2': {
-          value: '#000',
-          control: 'color',
-          default: '#fff',
-          description: 'This CSS property will appear as #000, overriding the default'
-        }
+    cssVars: {
+      '--my-custom-var-1': {
+        value: undefined, // Or don't specify
+        control: 'text', // Default is "text" so this can be omitted
+        default: '#1ea7fd',
+        description: 'This CSS property will appear as the default'
+      },
+      '--my-custom-var-2': {
+        value: '#000',
+        control: 'color',
+        default: '#fff',
+        description: 'This CSS property will appear as #000, overriding the default'
       }
     }
   }
