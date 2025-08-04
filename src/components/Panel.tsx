@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useRef, useEffect } from "react";
+import React, { memo, useCallback, useRef, useEffect, useState } from "react";
 import type { CssProperty } from "src/types";
 import { AddonPanel } from "storybook/internal/components";
 import { useChannel, useParameter } from "storybook/manager-api";
@@ -426,14 +426,33 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   const colorTextInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({}); 
   const colorSwatchRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Apply initial values only when config changes
+  // State to track current values for controlled inputs
+  const [currentValues, setCurrentValues] = useState<{ [key: string]: string }>({});
+
+  // Reset values when config changes (story navigation)
   useEffect(() => {
+    const newValues: { [key: string]: string } = {};
     Object.entries(config).forEach(([key, value]) => {
+      newValues[key] = value.value || '';
       if (value.value) {
         emit(EVENTS.REQUEST, { [key]: value.value });
       }
     });
+    setCurrentValues(newValues);
   }, [config, emit]);
+
+  // Update color swatches when current values change
+  useEffect(() => {
+    Object.entries(currentValues).forEach(([key, value]) => {
+      const colorSwatch = colorSwatchRefs.current[key];
+      const configValue = (config as Record<string, Parameter>)[key];
+      
+      if (colorSwatch && configValue?.control === 'color') {
+        // Use the current value or fallback to black if empty
+        colorSwatch.style.backgroundColor = value || '#000000';
+      }
+    });
+  }, [currentValues, config]);
 
   const parseColorWithOpacity = useCallback((colorValue: string | undefined) => {
     if (!colorValue) return { color: '#000000', opacity: 1 };
@@ -524,10 +543,14 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   }, []);
 
   const handleInputChange = useCallback((key: string, value: string) => {
+    setCurrentValues(prev => ({ ...prev, [key]: value }));
     emit(EVENTS.REQUEST, { [key]: value });
   }, [emit]);
 
   const handleColorTextInputChange = useCallback((key: string, value: string) => {
+    // Update state first
+    setCurrentValues(prev => ({ ...prev, [key]: value }));
+    
     // Parse the new color value to update color picker and opacity slider
     const { color, opacity } = parseColorWithOpacity(value);
     
@@ -564,6 +587,9 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     const opacity = opacityInput ? parseFloat(opacityInput.value) : 1;
     const finalValue = combineColorAndOpacity(color, opacity);
     
+    // Update state
+    setCurrentValues(prev => ({ ...prev, [key]: finalValue }));
+    
     // Update color text input with the final value (including opacity if < 1)
     const colorTextInput = colorTextInputRefs.current[key];
     if (colorTextInput) {
@@ -577,7 +603,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     }
     
     emit(EVENTS.REQUEST, { [key]: finalValue });
-  }, [emit, combineColorAndOpacity]);
+  }, [emit, combineColorAndOpacity, setCurrentValues]);
 
   const handleOpacityChange = useCallback((key: string, opacity: number) => {
     const colorInput = inputRefs.current[key];
@@ -616,6 +642,9 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
       }
     }
     
+    // Update state
+    setCurrentValues(prev => ({ ...prev, [key]: finalValue }));
+    
     // Update opacity display
     const opacityDisplay = opacityDisplayRefs.current[key];
     if (opacityDisplay) {
@@ -643,6 +672,9 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     const opacityDisplay = opacityDisplayRefs.current[key];
     const colorTextInput = colorTextInputRefs.current[key];
     const colorSwatch = colorSwatchRefs.current[key];
+    
+    // Update state
+    setCurrentValues(prev => ({ ...prev, [key]: '' }));
     
     if (inputElement) {
       inputElement.value = '';
@@ -676,6 +708,9 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     const colorSwatch = colorSwatchRefs.current[key];
     const originalValue = (config as Record<string, Parameter>)[key]?.value || '';
     const inputType = (config as Record<string, Parameter>)[key]?.control;
+    
+    // Update state
+    setCurrentValues(prev => ({ ...prev, [key]: originalValue }));
     
     if (inputElement) {
       if (inputType === 'color') {
@@ -863,9 +898,10 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
               {Object.entries(config).map(([key, value]) => {
                 const controlType = value.control || 'text';
                 const isColorType = controlType === 'color';
-                const { color, opacity } = isColorType ? parseColorWithOpacity(value.value) : { color: '', opacity: 1 };
+                const currentValue = currentValues[key] || value.value || '';
+                const { color, opacity } = isColorType ? parseColorWithOpacity(currentValue) : { color: '', opacity: 1 };
                 const canUseColorPicker = isColorType && isSixDigitHex(color);
-                const canShowOpacitySlider = isColorType && (isSixDigitHex(color) || convertCssColorNameToHex(value.value || ''));
+                const canShowOpacitySlider = isColorType && (isSixDigitHex(color) || convertCssColorNameToHex(currentValue || ''));
 
                 return (
                   <TableRow key={key}>
@@ -890,10 +926,10 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                               <ColorControlContainer>
                                 <ColorSwatch 
                                   ref={(el) => { colorSwatchRefs.current[key] = el; }}
-                                  color={canUseColorPicker ? combineColorAndOpacity(color, opacity) : (value.value || '#000000')}
+                                  color={canUseColorPicker ? combineColorAndOpacity(color, opacity) : (currentValue || '#000000')}
                                   role="button"
                                   tabIndex={0}
-                                  aria-label={`Color swatch for ${key}. Current color: ${value.value || 'not set'}. Click to open color picker.`}
+                                  aria-label={`Color swatch for ${key}. Current color: ${currentValue || 'not set'}. Click to open color picker.`}
                                   onKeyDown={(e) => {
                                     if (e.key === 'Enter' || e.key === ' ') {
                                       e.preventDefault();
@@ -908,7 +944,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                                     ref={(el) => { inputRefs.current[key] = el; }}
                                     id={key}
                                     type="color"
-                                    defaultValue={canUseColorPicker ? color : '#000000'}
+                                    value={canUseColorPicker ? color : '#000000'}
                                     onChange={(e) => handleColorChange(key, e.target.value)}
                                     aria-label={`Color picker for ${key}`}
                                     aria-describedby={value.description ? `${key}-description` : undefined}
@@ -917,7 +953,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                                 <ColorTextInput
                                   ref={(el) => { colorTextInputRefs.current[key] = el; }}
                                   type="text"
-                                  defaultValue={value.value || ''}
+                                  value={currentValue}
                                   onChange={(e) => handleColorTextInputChange(key, e.target.value)}
                                   placeholder="Enter color"
                                   aria-label={`Color value for ${key}`}
@@ -935,7 +971,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                                   min="0"
                                   max="1"
                                   step="0.01"
-                                  defaultValue={opacity.toString()}
+                                  value={opacity.toString()}
                                   onChange={(e) => handleOpacityChange(key, parseFloat(e.target.value))}
                                   aria-label={`Opacity for ${key}`}
                                   aria-valuetext={`${Math.round(opacity * 100)} percent`}
@@ -956,7 +992,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                               ref={(el) => { inputRefs.current[key] = el; }}
                               id={key}
                               type={controlType}
-                              defaultValue={value.value || ''}
+                              value={currentValue}
                               onChange={(e) => handleInputChange(key, e.target.value)}
                               placeholder={`Enter ${controlType}`}
                               step={controlType === 'number' ? 1 : undefined}
