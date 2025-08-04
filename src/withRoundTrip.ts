@@ -177,8 +177,8 @@ function findDeepestMeaningfulElement(): HTMLElement | null {
         
         // Consider any element with a class name as a potential component
         // (regardless of tag name - could be div, span, section, etc.)
-        const hasClass = element.className.trim() !== '';
-        const hasId = element.id !== '';
+        const hasClass = typeof element.className === 'string' && element.className.trim() !== '';
+        const hasId = typeof element.id === 'string' && element.id !== '';
         
         if (hasClass || hasId) {
           // Calculate depth from storybook-root
