@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useRef } from "react";
+import React, { memo, useCallback, useRef, useEffect } from "react";
 import type { CssProperty } from "src/types";
 import { AddonPanel } from "storybook/internal/components";
 import { useChannel, useParameter } from "storybook/manager-api";
@@ -426,10 +426,14 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   const colorTextInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({}); 
   const colorSwatchRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Apply initial values
-  Object.entries(config).forEach(([key, value]) => {
-    emit(EVENTS.REQUEST, { [key]: value.value });
-  });
+  // Apply initial values only when config changes
+  useEffect(() => {
+    Object.entries(config).forEach(([key, value]) => {
+      if (value.value) {
+        emit(EVENTS.REQUEST, { [key]: value.value });
+      }
+    });
+  }, [config, emit]);
 
   const parseColorWithOpacity = useCallback((colorValue: string | undefined) => {
     if (!colorValue) return { color: '#000000', opacity: 1 };
