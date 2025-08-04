@@ -145,17 +145,22 @@ function applyStylesToStory(storyId: string, styles: Record<string, string>): vo
     // Look for containers that might contain this story's components
     if (targetSelector) {
       // User specified a custom target
-      const storyContainers = document.querySelectorAll(`[data-docs-story*="${storyId}"], [id*="story--${storyId}"]`);
+      const storyContainers = document.querySelectorAll(`[data-docs-story="${storyId}"], [id="story--${storyId}"]`);
       if (storyContainers.length === 0) {
-        // Fallback: look in all story containers but check if they contain the right component
+        // If we can't find specific containers, be very conservative
+        // Only apply to elements that actually need these specific CSS variables
         const allContainers = document.querySelectorAll('[data-docs-story], .sb-story');
         allContainers.forEach(container => {
           const targetElements = container.querySelectorAll<HTMLElement>(targetSelector);
           targetElements.forEach(el => {
-            // Only add elements that can use CSS variables
+            // Only add elements that already use the specific CSS variables we're setting
             const computedStyle = window.getComputedStyle(el);
-            if (['background', 'backgroundColor', 'color'].some(style => 
-                computedStyle.getPropertyValue(style).includes('var('))) {
+            const usesOurVars = Object.keys(styles).some(cssVar => 
+              computedStyle.getPropertyValue(cssVar) || 
+              ['background', 'backgroundColor', 'color'].some(style => 
+                computedStyle.getPropertyValue(style).includes(`var(${cssVar})`))
+            );
+            if (usesOurVars) {
               elements.push(el);
             }
           });
@@ -168,16 +173,22 @@ function applyStylesToStory(storyId: string, styles: Record<string, string>): vo
       }
     } else {
       // Use smart detection
-      const storyContainers = document.querySelectorAll(`[data-docs-story*="${storyId}"], [id*="story--${storyId}"]`);
+      const storyContainers = document.querySelectorAll(`[data-docs-story="${storyId}"], [id="story--${storyId}"]`);
       if (storyContainers.length === 0) {
-        // Fallback: use smart detection on all containers but validate they use CSS vars
+        // If we can't find specific containers, be very conservative
+        // Only apply to elements that actually need these specific CSS variables
         const allContainers = document.querySelectorAll('[data-docs-story], .sb-story');
         allContainers.forEach(container => {
           const smartElement = findComponentInContainer(container as HTMLElement);
           if (smartElement) {
             const computedStyle = window.getComputedStyle(smartElement);
-            if (['background', 'backgroundColor', 'color'].some(style => 
-                computedStyle.getPropertyValue(style).includes('var('))) {
+            // Only add elements that use the specific CSS variables we're setting
+            const usesOurVars = Object.keys(styles).some(cssVar => 
+              computedStyle.getPropertyValue(cssVar) || 
+              ['background', 'backgroundColor', 'color'].some(style => 
+                computedStyle.getPropertyValue(style).includes(`var(${cssVar})`))
+            );
+            if (usesOurVars) {
               elements.push(smartElement);
             }
           }
