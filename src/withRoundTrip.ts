@@ -16,6 +16,9 @@ export const withRoundTrip: DecoratorFunction<Renderer> = (storyFn, context) => 
   // Reset styles for new story
   currentStyles = {};
   
+  // Immediately apply initial values from story parameters
+  applyInitialValues();
+  
   useChannel({
     [EVENTS.REQUEST]: (styles: Record<string, string>) => {
       // Accumulate the styles instead of overwriting them
@@ -34,46 +37,110 @@ export const withRoundTrip: DecoratorFunction<Renderer> = (storyFn, context) => 
   return storyFn();
 };
 
+function setupDocsModeMutationObserver() {
+  // For docs mode, observe the entire document for changes
+  const docsObserver = new MutationObserver((mutations) => {
+    let hasRelevantChanges = false;
+    
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+        // Check if any added nodes contain story components
+        for (const node of mutation.addedNodes) {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const element = node as Element;
+            // Check if the added node is or contains story content
+            if (element.matches?.('[data-docs-story], .sb-story') || 
+                element.querySelector?.('[data-docs-story], .sb-story')) {
+              hasRelevantChanges = true;
+              break;
+            }
+          }
+        }
+      }
+    });
+    
+    if (hasRelevantChanges) {
+      // Small debounce to prevent excessive calls but still be responsive
+      setTimeout(() => {
+        applyStylesToTarget();
+      }, 10);
+    }
+  });
+
+  docsObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+}
+
+function applyInitialValues(): void {
+  // Get CSS vars configuration from story parameters
+  const cssVarsConfig = currentContext?.parameters?.cssVars;
+  if (!cssVarsConfig) {
+    return;
+  }
+  
+  // Extract initial values from the configuration
+  const initialStyles: Record<string, string> = {};
+  Object.entries(cssVarsConfig).forEach(([key, config]: [string, any]) => {
+    if (config && typeof config === 'object' && config.value !== undefined) {
+      initialStyles[key] = config.value;
+    }
+  });
+  
+  // Store initial styles
+  currentStyles = { ...currentStyles, ...initialStyles };
+  
+  // Apply styles immediately
+  applyStylesToTarget();
+  
+  // For docs mode, also retry after delays since MDX components render asynchronously
+  if (currentContext?.viewMode === 'docs') {
+    setTimeout(() => applyStylesToTarget(), 100);
+    setTimeout(() => applyStylesToTarget(), 300);
+  }
+  
+  // Set up observers for DOM changes
+  if (!observer) {
+    setupMutationObserver();
+  }
+  if (currentContext?.viewMode === 'docs') {
+    setupDocsModeMutationObserver();
+  }
+}
+
 function applyStylesToTarget(): void {
   // Use requestAnimationFrame to ensure DOM is ready
   requestAnimationFrame(() => {
-    let targetElement: HTMLElement | null = null;
-    
-    // Strategy 1: Check if user specified a target selector in parameters
+    const isDocsMode = currentContext?.viewMode === 'docs';
     const targetSelector = currentContext?.parameters?.cssVarsTarget;
-    if (targetSelector) {
-      targetElement = document.querySelector<HTMLElement>(`#storybook-root ${targetSelector}`);
+    
+    let elements: HTMLElement[] = [];
+    
+    if (isDocsMode) {
+      // In docs mode, apply to story containers or user-specified targets
+      const selector = targetSelector 
+        ? `[data-docs-story] ${targetSelector}, .sb-story ${targetSelector}`
+        : '[data-docs-story] > *, .sb-story > *';
+      elements = Array.from(document.querySelectorAll<HTMLElement>(selector));
+    } else {
+      // For regular story mode
+      const selector = targetSelector 
+        ? `#storybook-root ${targetSelector}`
+        : '#storybook-root > *';
+      const element = document.querySelector<HTMLElement>(selector);
+      if (element) elements = [element];
     }
     
-    // Strategy 2: Look for elements that use CSS variables (most reliable)
-    if (!targetElement) {
-      targetElement = findElementUsingCssVariables();
-    }
-    
-    // Strategy 3: Find the deepest meaningful element
-    if (!targetElement) {
-      targetElement = findDeepestMeaningfulElement();
-    }
-    
-    // Strategy 4: Fallback to any element with class or id
-    if (!targetElement) {
-      targetElement = document.querySelector<HTMLElement>('#storybook-root [class], #storybook-root [id]:not(#storybook-root)');
-    }
-    
-    // Strategy 5: Ultimate fallback - direct child of storybook-root
-    if (!targetElement) {
-      targetElement = document.querySelector<HTMLElement>('#storybook-root > *');
-    }
-
-    if (!targetElement) return;
-
-    // Apply CSS variables
-    Object.entries(currentStyles).forEach(([property, value]) => {
-      if (value) {
-        targetElement!.style.setProperty(property, value);
-      } else {
-        targetElement!.style.removeProperty(property);
-      }
+    // Apply styles to all found elements
+    elements.forEach(element => {
+      Object.entries(currentStyles).forEach(([property, value]) => {
+        if (value) {
+          element.style.setProperty(property, value, isDocsMode ? 'important' : '');
+        } else {
+          element.style.removeProperty(property);
+        }
+      });
     });
   });
 }
@@ -98,10 +165,10 @@ function setupMutationObserver() {
     });
     
     if (hasRelevantChanges) {
-      // Debounce to avoid excessive calls during rapid DOM changes
+      // Small debounce to prevent excessive calls but still be responsive
       setTimeout(() => {
         applyStylesToTarget();
-      }, 50);
+      }, 10);
     }
   });
 
@@ -116,96 +183,4 @@ function cleanupObserver() {
     observer.disconnect();
     observer = null;
   }
-}
-
-// Find elements that are already using CSS variables (most likely the target)
-function findElementUsingCssVariables(): HTMLElement | null {
-  const root = document.getElementById('storybook-root');
-  if (!root) return null;
-
-  const walker = document.createTreeWalker(
-    root,
-    NodeFilter.SHOW_ELEMENT,
-    {
-      acceptNode: (node: Element) => {
-        if (node.id === 'storybook-root') return NodeFilter.FILTER_SKIP;
-        
-        const element = node as HTMLElement;
-        const computedStyle = window.getComputedStyle(element);
-        
-        // Check if element uses any CSS custom properties
-        for (let i = 0; i < computedStyle.length; i++) {
-          const property = computedStyle[i];
-          if (property && property.startsWith('--')) {
-            return NodeFilter.FILTER_ACCEPT;
-          }
-        }
-        
-        // Also check if the element's CSS contains var() functions
-        const styles = ['background', 'backgroundColor', 'color', 'border', 'borderColor'];
-        for (const style of styles) {
-          const value = computedStyle.getPropertyValue(style);
-          if (value && value.includes('var(--')) {
-            return NodeFilter.FILTER_ACCEPT;
-          }
-        }
-        
-        return NodeFilter.FILTER_SKIP;
-      }
-    }
-  );
-
-  return walker.nextNode() as HTMLElement | null;
-}
-
-// Find the deepest meaningful element (elements with classes or that use CSS variables)
-function findDeepestMeaningfulElement(): HTMLElement | null {
-  const root = document.getElementById('storybook-root');
-  if (!root) return null;
-
-  let deepestElement: HTMLElement | null = null;
-  let maxDepth = 0;
-
-  const walker = document.createTreeWalker(
-    root,
-    NodeFilter.SHOW_ELEMENT,
-    {
-      acceptNode: (node: Element) => {
-        if (node.id === 'storybook-root') return NodeFilter.FILTER_SKIP;
-        
-        const element = node as HTMLElement;
-        
-        // Consider any element with a class name as a potential component
-        // (regardless of tag name - could be div, span, section, etc.)
-        const hasClass = typeof element.className === 'string' && element.className.trim() !== '';
-        const hasId = typeof element.id === 'string' && element.id !== '';
-        
-        if (hasClass || hasId) {
-          // Calculate depth from storybook-root
-          let depth = 0;
-          let parent = element.parentElement;
-          while (parent && parent.id !== 'storybook-root') {
-            depth++;
-            parent = parent.parentElement;
-          }
-          
-          if (depth > maxDepth) {
-            maxDepth = depth;
-            deepestElement = element;
-          }
-          
-          return NodeFilter.FILTER_ACCEPT;
-        }
-        
-        return NodeFilter.FILTER_SKIP;
-      }
-    }
-  );
-
-  // Walk through all nodes to find the deepest
-  while (walker.nextNode()) {
-    // The logic is in the acceptNode function
-  }
-
-  return deepestElement;
 }
