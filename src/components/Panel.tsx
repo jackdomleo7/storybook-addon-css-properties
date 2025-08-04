@@ -433,10 +433,10 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   useEffect(() => {
     const newValues: { [key: string]: string } = {};
     Object.entries(config).forEach(([key, value]) => {
-      newValues[key] = value.value || '';
-      if (value.value) {
-        emit(EVENTS.REQUEST, { [key]: value.value });
-      }
+      const currentValue = value.value || '';
+      newValues[key] = currentValue;
+      // Always emit events for all configured properties, even if empty
+      emit(EVENTS.REQUEST, { [key]: currentValue });
     });
     setCurrentValues(newValues);
   }, [config, emit]);

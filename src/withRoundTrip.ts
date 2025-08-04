@@ -6,10 +6,21 @@ import { EVENTS } from "./constants";
 let storyStyles: Map<string, Record<string, string>> = new Map();
 let currentContext: any = null;
 let observer: MutationObserver | null = null;
+let previousStoryId: string | null = null;
+let previousStoryContext: any = null;
 
 export const withRoundTrip: DecoratorFunction<Renderer> = (storyFn, context) => {
-  currentContext = context;
   const storyId = context.id;
+  
+  // Clean up previous story's CSS variables if switching stories
+  if (previousStoryId && previousStoryId !== storyId && previousStoryContext) {
+    cleanupPreviousStoryStyles(previousStoryId, previousStoryContext);
+  }
+  
+  // Update tracking variables
+  previousStoryId = storyId;
+  previousStoryContext = currentContext; // Store the old context before updating
+  currentContext = context;
   
   // Clean up previous observer when switching stories
   cleanupObserver();
@@ -19,9 +30,7 @@ export const withRoundTrip: DecoratorFunction<Renderer> = (storyFn, context) => 
   
   // Only set up CSS vars if this specific story has them configured
   const storyHasCssVars = context?.parameters?.cssVars && 
-    Object.values(context.parameters.cssVars).some((config: any) => 
-      config && typeof config === 'object' && config.value !== undefined
-    );
+    Object.keys(context.parameters.cssVars).length > 0;
   
   if (storyHasCssVars) {
     // Initialize styles for this story
@@ -94,24 +103,20 @@ function applyInitialValues(storyId: string): void {
     return;
   }
   
-  // Extract only values that are explicitly set (not defaults)
+  // Extract values that are explicitly set, initialize others as empty
   const initialStyles: Record<string, string> = {};
   Object.entries(cssVarsConfig).forEach(([key, config]: [string, any]) => {
-    if (config && typeof config === 'object' && config.value !== undefined) {
-      initialStyles[key] = config.value;
+    if (config && typeof config === 'object') {
+      // Initialize with explicit value or empty string
+      initialStyles[key] = config.value || '';
     }
   });
   
-  // Only proceed if this story actually has custom values
-  if (Object.keys(initialStyles).length === 0) {
-    return;
-  }
-  
-  // Store initial styles for this story
+  // Store initial styles for this story (even if all are empty)
   const currentStoryStyles = storyStyles.get(storyId) || {};
   storyStyles.set(storyId, { ...currentStoryStyles, ...initialStyles });
   
-  // Apply styles immediately to this story
+  // Apply styles immediately to this story (this will remove properties for empty values)
   applyStylesToStory(storyId, storyStyles.get(storyId)!);
   
   // For docs mode, also retry after delays since MDX components render asynchronously
@@ -133,7 +138,7 @@ function applyStylesToStory(storyId: string, styles: Record<string, string>): vo
   const isDocsMode = currentContext?.viewMode === 'docs';
   const targetSelector = currentContext?.parameters?.cssVarsTarget;
   
-  // Only proceed if we actually have styles to apply
+  // Only proceed if we actually have styles configuration (even if values are empty)
   if (Object.keys(styles).length === 0) {
     return;
   }
@@ -261,6 +266,58 @@ function cleanupObserver() {
   if (observer) {
     observer.disconnect();
     observer = null;
+  }
+}
+
+function cleanupPreviousStoryStyles(previousStoryId: string, previousContext: any) {
+  const previousStyles = storyStyles.get(previousStoryId);
+  if (!previousStyles || !previousContext) {
+    return;
+  }
+
+  const isDocsMode = previousContext?.viewMode === 'docs';
+  const targetSelector = previousContext?.parameters?.cssVarsTarget;
+  
+  let elements: HTMLElement[] = [];
+  
+  if (isDocsMode) {
+    // In docs mode, only clean up elements specific to the previous story
+    if (targetSelector) {
+      const storyContainers = document.querySelectorAll(`[data-docs-story="${previousStoryId}"], [id="story--${previousStoryId}"]`);
+      storyContainers.forEach(container => {
+        const targetElements = container.querySelectorAll<HTMLElement>(targetSelector);
+        elements.push(...Array.from(targetElements));
+      });
+    } else {
+      // Use smart detection for specific story containers
+      const storyContainers = document.querySelectorAll(`[data-docs-story="${previousStoryId}"], [id="story--${previousStoryId}"]`);
+      storyContainers.forEach(container => {
+        const smartElement = findComponentInContainer(container as HTMLElement);
+        if (smartElement) elements.push(smartElement);
+      });
+    }
+  } else {
+    // For regular story mode, clean up all elements since only one story is visible
+    if (targetSelector) {
+      const element = document.querySelector<HTMLElement>(`#storybook-root ${targetSelector}`);
+      if (element) elements = [element];
+    } else {
+      // Use smart component detection
+      const smartElement = findComponentInStoryRoot();
+      if (smartElement) elements = [smartElement];
+    }
+  }
+  
+  // Remove all CSS variables that were set by the previous story
+  elements.forEach(element => {
+    Object.keys(previousStyles).forEach(property => {
+      element.style.removeProperty(property);
+    });
+  });
+  
+  // Don't remove from storyStyles map in docs mode since multiple stories can be active
+  if (!isDocsMode) {
+    storyStyles.delete(previousStoryId);
   }
 }
 
