@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useRef, useEffect, useState } from "react";
-import type { CssProperty } from "src/types";
+import React, { memo, useCallback, useRef, useEffect, useState, useMemo } from "react";
+import type { CssProperty, Parameters, CssPropertyConfig } from "src/types";
 import { AddonPanel } from "storybook/internal/components";
 import { useChannel, useParameter } from "storybook/manager-api";
 import { styled } from "storybook/theming";
@@ -46,7 +46,10 @@ const Button = styled.button`
   background-color: ${({ theme }) => theme.background.content};
   color: ${({ theme }) => theme.color.defaultText};
   cursor: pointer;
-  transition: all 0.15s ease-out;
+  
+  @media (prefers-reduced-motion: no-preference) {
+    transition: all 0.15s ease-out;
+  }
 
   &:hover {
     border-color: ${({ theme }) => theme.color.secondary};
@@ -64,23 +67,24 @@ const Button = styled.button`
   }
 `;
 
-const Table = styled.div`
-  display: table;
+const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
+  border: 1px solid ${({ theme }) => theme.appBorderColor};
+  border-radius: .25rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 `;
 
-const TableHeader = styled.div`
-  display: table-header-group;
+const TableHeader = styled.thead`
   background: ${({ theme }) => theme.background.app};
 `;
 
-const TableHeaderRow = styled.div`
-  display: table-row;
+const TableHeaderRow = styled.tr`
+  /* No additional styles needed */
 `;
 
-const TableHeaderCell = styled.div`
-  display: table-cell;
+const TableHeaderCell = styled.th`
   padding: .5rem .9375rem;
   font-family: ${({ theme }) => theme.typography.fonts.base};
   font-size: ${({ theme }) => (theme.typography.size.s1 / 16)}rem;
@@ -107,20 +111,48 @@ const TableHeaderCell = styled.div`
   }
 `;
 
-const TableBody = styled.div`
-  display: table-row-group;
+const TableBody = styled.tbody`
+  /* No additional styles needed */
 `;
 
-const TableRow = styled.div`
-  display: table-row;
-  
+const CategoryHeaderRow = styled.tr`
+  background: ${({ theme }) => theme.background.app};
+`;
+
+const CategoryHeaderCell = styled.th`
+  padding: .75rem .9375rem;
+  font-family: ${({ theme }) => theme.typography.fonts.base};
+  font-size: ${({ theme }) => (theme.typography.size.s2 / 16)}rem;
+  font-weight: ${({ theme }) => theme.typography.weight.bold};
+  color: ${({ theme }) => theme.color.defaultText};
+  text-align: left;
+  background: linear-gradient(135deg, ${({ theme }) => theme.background.hoverable}, ${({ theme }) => theme.background.app});
+  border-top: 1px solid ${({ theme }) => theme.appBorderColor};
+  border-bottom: 2px solid ${({ theme }) => theme.color.secondary};
+  position: relative;
+`;
+
+const TableRow = styled.tr`
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color 0.15s ease;
+  }
+
   &:hover {
     background-color: ${({ theme }) => theme.background.hoverable};
   }
+  
+  &:last-child td {
+    border-bottom: none;
+  }
+  
+  &:focus-within {
+    background-color: ${({ theme }) => theme.background.hoverable};
+    outline: 2px solid ${({ theme }) => theme.color.secondary};
+    outline-offset: -2px;
+  }
 `;
 
-const TableCell = styled.div`
-  display: table-cell;
+const TableCell = styled.td`
   padding: .625rem .9375rem;
   vertical-align: middle;
   border-bottom: 1px solid ${({ theme }) => theme.appBorderColor};
@@ -135,6 +167,10 @@ const PropertyName = styled.div`
   color: ${({ theme }) => theme.color.secondary};
   margin-bottom: .25rem;
   user-select: all;
+  background: ${({ theme }) => theme.background.app};
+  padding: .125rem .25rem;
+  border-radius: .125rem;
+  display: inline-block;
 `;
 
 const PropertyDescription = styled.div`
@@ -174,7 +210,10 @@ const ColorSwatch = styled.div<{ color: string }>`
   cursor: pointer;
   position: relative;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-  transition: all 0.15s ease-out;
+  
+  @media (prefers-reduced-motion: no-preference) {
+    transition: all 0.15s ease-out;
+  }
   
   &:hover {
     border-color: ${({ theme }) => theme.color.secondary};
@@ -183,9 +222,14 @@ const ColorSwatch = styled.div<{ color: string }>`
   
   &:focus-within,
   &:focus {
-    outline: none;
+    outline: 2px solid ${({ theme }) => theme.color.secondary};
+    outline-offset: 2px;
     border-color: ${({ theme }) => theme.color.secondary};
-    box-shadow: 0 0 0 .125rem ${({ theme }) => theme.color.secondary}33, inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:focus:not(:focus-visible) {
+    outline: none;
   }
   
   /* Checkered background for transparency */
@@ -403,15 +447,69 @@ interface PanelProps {
   active: boolean;
 }
 
-interface Parameter {
-  value?: string;
-  control?: 'color' | 'text' | 'number';
-  default?: string;
-  description?: string;
+// Helper function to check if a key is a CSS property (starts with --)
+function isCssProperty(key: string): key is CssProperty {
+  return key.startsWith('--');
 }
 
-interface Parameters {
-  [key: CssProperty]: Parameter;
+// Helper function to flatten categorized parameters into a flat structure for processing
+function flattenParameters(config: Parameters): Record<string, CssPropertyConfig> {
+  const flattened: Record<string, CssPropertyConfig> = {};
+  
+  Object.entries(config).forEach(([key, value]) => {
+    if (isCssProperty(key)) {
+      // Direct CSS property
+      flattened[key] = value as CssPropertyConfig;
+    } else {
+      // Category - extract all CSS properties from it
+      const category = value as Record<string, CssPropertyConfig>;
+      Object.entries(category).forEach(([cssKey, cssValue]) => {
+        if (isCssProperty(cssKey)) {
+          flattened[cssKey] = cssValue;
+        }
+      });
+    }
+  });
+  
+  return flattened;
+}
+
+// Helper function to organize parameters by category for rendering
+function organizeParametersByCategory(config: Parameters): Array<{ category: string | null; properties: Array<{ key: CssProperty; value: CssPropertyConfig }> }> {
+  const organized: Array<{ category: string | null; properties: Array<{ key: CssProperty; value: CssPropertyConfig }> }> = [];
+  const uncategorized: Array<{ key: CssProperty; value: CssPropertyConfig }> = [];
+  const categories = new Map<string, Array<{ key: CssProperty; value: CssPropertyConfig }>>();
+
+  Object.entries(config).forEach(([key, value]) => {
+    if (isCssProperty(key)) {
+      // Direct CSS property (uncategorized)
+      uncategorized.push({ key, value: value as CssPropertyConfig });
+    } else {
+      // Category
+      const categoryProps: Array<{ key: CssProperty; value: CssPropertyConfig }> = [];
+      const category = value as Record<string, CssPropertyConfig>;
+      Object.entries(category).forEach(([cssKey, cssValue]) => {
+        if (isCssProperty(cssKey)) {
+          categoryProps.push({ key: cssKey, value: cssValue });
+        }
+      });
+      if (categoryProps.length > 0) {
+        categories.set(key, categoryProps);
+      }
+    }
+  });
+
+  // Add uncategorized properties first
+  if (uncategorized.length > 0) {
+    organized.push({ category: null, properties: uncategorized });
+  }
+
+  // Add categorized properties
+  categories.forEach((properties, categoryName) => {
+    organized.push({ category: categoryName, properties });
+  });
+
+  return organized;
 }
 
 export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
@@ -429,30 +527,36 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   // State to track current values for controlled inputs
   const [currentValues, setCurrentValues] = useState<{ [key: string]: string }>({});
 
+  // Get flattened parameters for processing - memoized for performance
+  const flatParams = useMemo(() => flattenParameters(config), [config]);
+  
+  // Get organized parameters for rendering - memoized for performance
+  const organizedParams = useMemo(() => organizeParametersByCategory(config), [config]);
+
   // Reset values when config changes (story navigation)
   useEffect(() => {
     const newValues: { [key: string]: string } = {};
-    Object.entries(config).forEach(([key, value]) => {
+    Object.entries(flatParams).forEach(([key, value]) => {
       const currentValue = value.value || '';
       newValues[key] = currentValue;
       // Always emit events for all configured properties, even if empty
       emit(EVENTS.REQUEST, { [key]: currentValue });
     });
     setCurrentValues(newValues);
-  }, [config, emit]);
+  }, [flatParams, emit]);
 
   // Update color swatches when current values change
   useEffect(() => {
     Object.entries(currentValues).forEach(([key, value]) => {
       const colorSwatch = colorSwatchRefs.current[key];
-      const configValue = (config as Record<string, Parameter>)[key];
+      const configValue = flatParams[key];
       
       if (colorSwatch && configValue?.control === 'color') {
         // Use the current value or fallback to black if empty
         colorSwatch.style.backgroundColor = value || '#000000';
       }
     });
-  }, [currentValues, config]);
+  }, [currentValues, flatParams]);
 
   const parseColorWithOpacity = useCallback((colorValue: string | undefined) => {
     if (!colorValue) return { color: '#000000', opacity: 1 };
@@ -710,18 +814,18 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   }, [emit]);
 
   const handleClearAll = useCallback(() => {
-    Object.keys(config).forEach(key => {
+    Object.keys(flatParams).forEach(key => {
       handleClear(key);
     });
-  }, [config, handleClear]);
+  }, [flatParams, handleClear]);
 
   const handleReset = useCallback((key: string) => {
     const inputElement = inputRefs.current[key];
     const opacityElement = opacityRefs.current[key];
     const opacityDisplay = opacityDisplayRefs.current[key];
     const colorSwatch = colorSwatchRefs.current[key];
-    const originalValue = (config as Record<string, Parameter>)[key]?.value || '';
-    const inputType = (config as Record<string, Parameter>)[key]?.control;
+    const originalValue = flatParams[key]?.value || '';
+    const inputType = flatParams[key]?.control;
     
     // Update state - this will automatically update controlled input values
     setCurrentValues(prev => ({ ...prev, [key]: originalValue }));
@@ -747,13 +851,13 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     }
     
     emit(EVENTS.REQUEST, { [key]: originalValue });
-  }, [config, emit, parseColorWithOpacity]);
+  }, [flatParams, emit, parseColorWithOpacity]);
 
   const handleResetAll = useCallback(() => {
-    Object.entries(config).forEach(([key, value]) => {
+    Object.entries(flatParams).forEach(([key, value]) => {
       handleReset(key);
     });
-  }, [config, handleReset]);
+  }, [flatParams, handleReset]);
 
   const convertHslToHex = useCallback((h: number, s: number, l: number): string | null => {
     const hue = h / 360;
@@ -906,7 +1010,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
             <Button 
               onClick={handleClearAll} 
               title="Use the component's default values"
-              aria-controls={Object.keys(config).join(' ')}
+              aria-controls={Object.keys(flatParams).join(' ')}
               aria-describedby="clear-label"
             >
               Clear all
@@ -914,7 +1018,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
             <Button 
               onClick={handleResetAll} 
               title="Use the story's default values"
-              aria-controls={Object.keys(config).join(' ')}
+              aria-controls={Object.keys(flatParams).join(' ')}
               aria-describedby="reset-label"
             >
               Reset all
@@ -922,7 +1026,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
           </ButtonGroup>
         </Toolbar>
         
-        {Object.keys(config).length === 0 ? (
+        {Object.keys(flatParams).length === 0 ? (
           <EmptyState>
             <h3>No CSS Properties configured</h3>
             <p>
@@ -930,149 +1034,160 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
             </p>
           </EmptyState>
         ) : (
-          <Table>
+          <Table role="table" aria-label="CSS Properties Configuration">
             <TableHeader>
               <TableHeaderRow>
-                <TableHeaderCell>Name</TableHeaderCell>
-                <TableHeaderCell>Default</TableHeaderCell>
-                <TableHeaderCell>Control</TableHeaderCell>
-                <TableHeaderCell>Actions</TableHeaderCell>
+                <TableHeaderCell scope="col">Name</TableHeaderCell>
+                <TableHeaderCell scope="col">Default</TableHeaderCell>
+                <TableHeaderCell scope="col">Control</TableHeaderCell>
+                <TableHeaderCell scope="col">Actions</TableHeaderCell>
               </TableHeaderRow>
             </TableHeader>
             
             <TableBody>
-              {Object.entries(config).map(([key, value]) => {
-                const controlType = value.control || 'text';
-                const isColorType = controlType === 'color';
-                const currentValue = currentValues[key] !== undefined ? currentValues[key] : (value.value || '');
-                const { color, opacity } = isColorType ? parseColorWithOpacity(currentValue) : { color: '', opacity: 1 };
-                const canUseColorPicker = isColorType && isSixDigitHex(color);
-                const canShowOpacitySlider = isColorType && (isSixDigitHex(color) || convertCssColorNameToHex(currentValue || '') || hasAlphaChannel(currentValue || ''));
+              {organizedParams.map(({ category, properties }) => (
+                <React.Fragment key={category || 'uncategorized'}>
+                  {category && (
+                    <CategoryHeaderRow>
+                      <CategoryHeaderCell colSpan={4} scope="colgroup">
+                        {category}
+                      </CategoryHeaderCell>
+                    </CategoryHeaderRow>
+                  )}
+                  {properties.map(({ key, value }) => {
+                    const controlType = value.control || 'text';
+                    const isColorType = controlType === 'color';
+                    const currentValue = currentValues[key] !== undefined ? currentValues[key] : (value.value || '');
+                    const { color, opacity } = isColorType ? parseColorWithOpacity(currentValue) : { color: '', opacity: 1 };
+                    const canUseColorPicker = isColorType && isSixDigitHex(color);
+                    const canShowOpacitySlider = isColorType && (isSixDigitHex(color) || convertCssColorNameToHex(currentValue || '') || hasAlphaChannel(currentValue || ''));
 
-                return (
-                  <TableRow key={key}>
-                    <TableCell>
-                      <PropertyName>{key}</PropertyName>
-                      {value.description && (
-                        <PropertyDescription id={`${key}-description`}>{value.description}</PropertyDescription>
-                      )}
-                    </TableCell>
-                    
-                    <TableCell>
-                      <DefaultValueCell className={value.default ? 'has-value' : ''}>
-                        {value.default || '–'}
-                      </DefaultValueCell>
-                    </TableCell>
-                    
-                    <TableCell>
-                      <ControlsContainer>
-                        {isColorType ? (
-                          <>
-                            <ControlRow>
-                              <ColorControlContainer>
-                                <ColorSwatch 
-                                  ref={(el) => { colorSwatchRefs.current[key] = el; }}
-                                  color={canUseColorPicker ? combineColorAndOpacity(color, opacity) : (currentValue || '#000000')}
-                                  role="button"
-                                  tabIndex={0}
-                                  aria-label={`Color swatch for ${key}. Current color: ${currentValue || 'not set'}. Click to open color picker.`}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                      e.preventDefault();
-                                      const colorInput = inputRefs.current[key];
-                                      if (colorInput) {
-                                        colorInput.click();
-                                      }
-                                    }
-                                  }}
-                                >
-                                  <HiddenColorInput
-                                    ref={(el) => { inputRefs.current[key] = el; }}
-                                    id={key}
-                                    type="color"
-                                    value={canUseColorPicker ? color : '#000000'}
-                                    onChange={(e) => handleColorChange(key, e.target.value)}
-                                    aria-label={`Color picker for ${key}`}
-                                    aria-describedby={value.description ? `${key}-description` : undefined}
-                                  />
-                                </ColorSwatch>
-                                <ColorTextInput
-                                  ref={(el) => { colorTextInputRefs.current[key] = el; }}
-                                  type="text"
+                    return (
+                      <TableRow key={key}>
+                        <TableCell>
+                          <PropertyName>{key}</PropertyName>
+                          {value.description && (
+                            <PropertyDescription id={`${key}-description`}>{value.description}</PropertyDescription>
+                          )}
+                        </TableCell>
+                        
+                        <TableCell>
+                          <DefaultValueCell className={value.default ? 'has-value' : ''}>
+                            {value.default || '–'}
+                          </DefaultValueCell>
+                        </TableCell>
+                        
+                        <TableCell>
+                          <ControlsContainer>
+                            {isColorType ? (
+                              <>
+                                <ControlRow>
+                                  <ColorControlContainer>
+                                    <ColorSwatch 
+                                      ref={(el) => { colorSwatchRefs.current[key] = el; }}
+                                      color={canUseColorPicker ? combineColorAndOpacity(color, opacity) : (currentValue || '#000000')}
+                                      role="button"
+                                      tabIndex={0}
+                                      aria-label={`Color swatch for ${key}. Current color: ${currentValue || 'not set'}. Click to open color picker.`}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                          e.preventDefault();
+                                          const colorInput = inputRefs.current[key];
+                                          if (colorInput) {
+                                            colorInput.click();
+                                          }
+                                        }
+                                      }}
+                                    >
+                                      <HiddenColorInput
+                                        ref={(el) => { inputRefs.current[key] = el; }}
+                                        id={key}
+                                        type="color"
+                                        value={canUseColorPicker ? color : '#000000'}
+                                        onChange={(e) => handleColorChange(key, e.target.value)}
+                                        aria-label={`Color picker for ${key}`}
+                                        aria-describedby={value.description ? `${key}-description` : undefined}
+                                      />
+                                    </ColorSwatch>
+                                    <ColorTextInput
+                                      ref={(el) => { colorTextInputRefs.current[key] = el; }}
+                                      type="text"
+                                      value={currentValue}
+                                      onChange={(e) => handleColorTextInputChange(key, e.target.value)}
+                                      placeholder="Enter color"
+                                      aria-label={`Color value for ${key}`}
+                                      aria-describedby={value.description ? `${key}-description` : undefined}
+                                    />
+                                  </ColorControlContainer>
+                                </ControlRow>
+                                {canShowOpacitySlider && (
+                                  <ControlRow>
+                                    <OpacityLabel htmlFor={`${key}-opacity`}>Opacity:</OpacityLabel>
+                                    <Input
+                                      ref={(el) => { opacityRefs.current[key] = el; }}
+                                      id={`${key}-opacity`}
+                                      type="range"
+                                      min="0"
+                                      max="1"
+                                      step="0.01"
+                                      value={opacity.toString()}
+                                      onChange={(e) => handleOpacityChange(key, parseFloat(e.target.value))}
+                                      aria-label={`Opacity for ${key}`}
+                                      aria-valuetext={`${Math.round(opacity * 100)} percent`}
+                                      aria-describedby={`${key}-opacity-value`}
+                                    />
+                                    <OpacityValue 
+                                      ref={(el) => { opacityDisplayRefs.current[key] = el; }}
+                                      id={`${key}-opacity-value`}
+                                    >
+                                      {Math.round(opacity * 100)}%
+                                    </OpacityValue>
+                                  </ControlRow>
+                                )}
+                              </>
+                            ) : (
+                              <ControlRow>
+                                <Input
+                                  ref={(el) => { inputRefs.current[key] = el; }}
+                                  id={key}
+                                  type={controlType}
                                   value={currentValue}
-                                  onChange={(e) => handleColorTextInputChange(key, e.target.value)}
-                                  placeholder="Enter color"
-                                  aria-label={`Color value for ${key}`}
+                                  onChange={(e) => handleInputChange(key, e.target.value)}
+                                  placeholder={`Enter ${controlType}`}
+                                  step={controlType === 'number' ? 1 : undefined}
+                                  aria-label={`${controlType} input for ${key}`}
                                   aria-describedby={value.description ? `${key}-description` : undefined}
                                 />
-                              </ColorControlContainer>
-                            </ControlRow>
-                            {canShowOpacitySlider && (
-                              <ControlRow>
-                                <OpacityLabel htmlFor={`${key}-opacity`}>Opacity:</OpacityLabel>
-                                <Input
-                                  ref={(el) => { opacityRefs.current[key] = el; }}
-                                  id={`${key}-opacity`}
-                                  type="range"
-                                  min="0"
-                                  max="1"
-                                  step="0.01"
-                                  value={opacity.toString()}
-                                  onChange={(e) => handleOpacityChange(key, parseFloat(e.target.value))}
-                                  aria-label={`Opacity for ${key}`}
-                                  aria-valuetext={`${Math.round(opacity * 100)} percent`}
-                                  aria-describedby={`${key}-opacity-value`}
-                                />
-                                <OpacityValue 
-                                  ref={(el) => { opacityDisplayRefs.current[key] = el; }}
-                                  id={`${key}-opacity-value`}
-                                >
-                                  {Math.round(opacity * 100)}%
-                                </OpacityValue>
                               </ControlRow>
                             )}
-                          </>
-                        ) : (
-                          <ControlRow>
-                            <Input
-                              ref={(el) => { inputRefs.current[key] = el; }}
-                              id={key}
-                              type={controlType}
-                              value={currentValue}
-                              onChange={(e) => handleInputChange(key, e.target.value)}
-                              placeholder={`Enter ${controlType}`}
-                              step={controlType === 'number' ? 1 : undefined}
-                              aria-label={`${controlType} input for ${key}`}
-                              aria-describedby={value.description ? `${key}-description` : undefined}
-                            />
-                          </ControlRow>
-                        )}
-                      </ControlsContainer>
-                    </TableCell>
-                    
-                    <TableCell>
-                      <ButtonGroup>
-                        <SmallButton 
-                          onClick={() => handleClear(key)} 
-                          title="Use component default"
-                          aria-controls={key}
-                          aria-describedby="clear-label"
-                        >
-                          Clear
-                        </SmallButton>
-                        <SmallButton 
-                          onClick={() => handleReset(key)} 
-                          title="Use story default"
-                          aria-controls={key}
-                          aria-describedby="reset-label"
-                        >
-                          Reset
-                        </SmallButton>
-                      </ButtonGroup>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                          </ControlsContainer>
+                        </TableCell>
+                        
+                        <TableCell>
+                          <ButtonGroup>
+                            <SmallButton 
+                              onClick={() => handleClear(key)} 
+                              title="Use component default"
+                              aria-controls={key}
+                              aria-describedby="clear-label"
+                            >
+                              Clear
+                            </SmallButton>
+                            <SmallButton 
+                              onClick={() => handleReset(key)} 
+                              title="Use story default"
+                              aria-controls={key}
+                              aria-describedby="reset-label"
+                            >
+                              Reset
+                            </SmallButton>
+                          </ButtonGroup>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </React.Fragment>
+              ))}
             </TableBody>
           </Table>
         )}

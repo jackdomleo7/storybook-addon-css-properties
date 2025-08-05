@@ -50,11 +50,65 @@ export default {
 export const Custom = {
   parameters: {
     cssVars: {
-      '--button-bg-color': { value: '#f80' }
+      '--my-custom-var-1': { value: '#f80' }
     }
   }
 };
 ```
+
+### Categorizing CSS Variables
+
+You can organize your CSS variables into categories for better organization in the panel. This addon does not support sub-categories.
+
+```js
+export default {
+  component: Button,
+  parameters: {
+    cssVars: {
+      // Uncategorized variables (appear at the top)
+      '--my-custom-var-1': {
+        control: 'color',
+        default: '#1ea7fd',
+        description: 'Foo bar'
+      },
+      
+      // Category: Colors
+      'Colors': {
+        '--my-custom-var-2': {
+          control: 'color',
+          default: '#1ea7fd',
+          description: 'Foo bar'
+        },
+        '--my-custom-var-3': {
+          control: 'color',
+          default: '#fff',
+          description: 'Foo bar'
+        }
+      },
+      
+      // Category: Layout
+      'Layout': {
+        '--my-custom-var-4': {
+          control: 'text',
+          default: '10px 20px',
+          description: 'Foo bar'
+        },
+        '--my-custom-var-5': {
+          control: 'text',
+          default: '4px',
+          description: 'Foo bar'
+        }
+      }
+    }
+  }
+};
+```
+
+**Rules for categorization:**
+- Keys starting with `--` are treated as CSS variables
+- Other keys are treated as category names
+- Subcategories are not supported
+- Categories are purely visual and don't affect how CSS variables are applied
 
 ### Advanced Options
 

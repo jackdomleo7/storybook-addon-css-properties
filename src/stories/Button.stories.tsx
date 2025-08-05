@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useState } from 'react';
 import { Button } from "./Button";
-import { css } from "storybook/internal/theming";
 
 const meta: Meta<typeof Button> = {
   title: "Example/Button",
@@ -11,12 +10,34 @@ const meta: Meta<typeof Button> = {
     cssVars: {
       '--button-bg-color': {
         control: 'color',
-        default: '#1ea7fd',
+        default: '#1EA7FD',
         description: 'Background color of the button'
       },
       '--button-text-color': {
-        default: '#fff',
+        default: '#FFF',
         description: 'Text color of the button'
+      },
+      'Colors': {
+        '--button-hover-bg': {
+          control: 'color',
+          default: '#0D7DC1',
+          description: 'Background color when hovered'
+        },
+        '--button-hover-text-color': {
+          control: 'color',
+          default: 'var(--button-text-color)',
+          description: 'Text color when hovered'
+        }
+      },
+      'Layout': {
+        '--button-padding': {
+          default: '0.5em 1.5em',
+          description: 'Padding around the button text'
+        },
+        '--button-border-radius': {
+          default: '3em',
+          description: 'Corner radius of the button'
+        }
       }
     }
   }
@@ -35,6 +56,19 @@ export const Custom: Story = {
       },
       '--button-text-color': {
         value: 'ghostwhite'
+      },
+      'Colors': {
+        '--button-hover-bg': {
+          value: '#e70'
+        }
+      },
+      'Layout': {
+        '--button-padding': {
+          value: '15px 30px'
+        },
+        '--button-border-radius': {
+          value: '8px'
+        }
       }
     }
   }
@@ -48,6 +82,19 @@ export const CustomWithDecorator: Story = {
       },
       '--button-text-color': {
         value: 'ghostwhite'
+      },
+      'Colors': {
+        '--button-hover-bg': {
+          value: '#c50'
+        }
+      },
+      'Layout': {
+        '--button-padding': {
+          value: '12px 24px'
+        },
+        '--button-border-radius': {
+          value: '12px'
+        }
       }
     }
   },
@@ -84,6 +131,19 @@ export const CustomConditionalRender: Story = {
       },
       '--button-text-color': {
         value: '#fff'
+      },
+      'Colors': {
+        '--button-hover-bg': {
+          value: '#ff5252'
+        }
+      },
+      'Layout': {
+        '--button-padding': {
+          value: '8px 16px'
+        },
+        '--button-border-radius': {
+          value: '20px'
+        }
       }
     }
   }

@@ -1,6 +1,34 @@
 import type { Renderer, DecoratorFunction } from "storybook/internal/types";
 import { useChannel } from "storybook/preview-api";
 import { EVENTS } from "./constants";
+import type { Parameters, CssPropertyConfig, CssProperty } from "./types";
+
+// Helper function to check if a key is a CSS property (starts with --)
+function isCssProperty(key: string): key is CssProperty {
+  return key.startsWith('--');
+}
+
+// Helper function to flatten categorized parameters into a flat structure for processing
+function flattenParameters(config: Parameters): Record<string, CssPropertyConfig> {
+  const flattened: Record<string, CssPropertyConfig> = {};
+  
+  Object.entries(config).forEach(([key, value]) => {
+    if (isCssProperty(key)) {
+      // Direct CSS property
+      flattened[key] = value as CssPropertyConfig;
+    } else {
+      // Category - extract all CSS properties from it
+      const category = value as Record<string, CssPropertyConfig>;
+      Object.entries(category).forEach(([cssKey, cssValue]) => {
+        if (isCssProperty(cssKey)) {
+          flattened[cssKey] = cssValue;
+        }
+      });
+    }
+  });
+  
+  return flattened;
+}
 
 // Store styles per story instance
 let storyStyles: Map<string, Record<string, string>> = new Map();
@@ -103,13 +131,14 @@ function applyInitialValues(storyId: string): void {
     return;
   }
   
+  // Flatten the categorized parameters to get all CSS properties
+  const flattenedParams = flattenParameters(cssVarsConfig as Parameters);
+  
   // Extract values that are explicitly set, initialize others as empty
   const initialStyles: Record<string, string> = {};
-  Object.entries(cssVarsConfig).forEach(([key, config]: [string, any]) => {
-    if (config && typeof config === 'object') {
-      // Initialize with explicit value or empty string
-      initialStyles[key] = config.value || '';
-    }
+  Object.entries(flattenedParams).forEach(([key, config]) => {
+    // Initialize with explicit value or empty string
+    initialStyles[key] = config.value || '';
   });
   
   // Store initial styles for this story (even if all are empty)

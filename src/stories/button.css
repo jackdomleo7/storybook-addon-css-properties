@@ -2,12 +2,22 @@
   font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: 700;
   font-size: 1.125rem;
-  border: 0;
-  border-radius: 3em;
-  padding: 0.5em 1.5em;
+  border: 1px solid var(--button-bg-color, #1ea7fd);
+  border-radius: var(--button-border-radius, 3em);
+  padding: var(--button-padding, 0.5em 1.5em);
   cursor: pointer;
   display: inline-block;
   line-height: 1;
   color: var(--button-text-color, #fff);
-  background-color: var(--button-bg-color, #1ea7fd);
+  background: var(--button-bg-color, #1ea7fd);
+  outline-offset: 2px;
+  
+  @media (prefers-reduced-motion: no-preference) {
+    transition: all 0.2s ease;
+  }
+}
+
+.button:hover {
+  background: var(--button-hover-bg, var(--button-bg-color, #0d7dc1));
+  color: var(--button-hover-text-color, var(--button-text-color, #fff));
 }
