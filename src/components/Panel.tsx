@@ -459,6 +459,31 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     
     const cleanColor = colorValue.trim().toLowerCase();
     
+    // Check for 4-digit hex with alpha (e.g., #f081)
+    const hex4Match = cleanColor.match(/^#([0-9a-f]{4})$/);
+    if (hex4Match && hex4Match[1] && hex4Match[1].length === 4) {
+      const hex = hex4Match[1];
+      // Expand 4-digit hex to 6-digit and extract alpha
+      const r = hex.charAt(0) + hex.charAt(0);
+      const g = hex.charAt(1) + hex.charAt(1);
+      const b = hex.charAt(2) + hex.charAt(2);
+      const a = hex.charAt(3) + hex.charAt(3);
+      const opacity = parseInt(a, 16) / 255;
+      return { color: `#${r}${g}${b}`, opacity };
+    }
+    
+    // Check for 8-digit hex with alpha (e.g., #ff008811)
+    const hex8Match = cleanColor.match(/^#([0-9a-f]{8})$/);
+    if (hex8Match && hex8Match[1] && hex8Match[1].length === 8) {
+      const hex = hex8Match[1];
+      const r = hex.substring(0, 2);
+      const g = hex.substring(2, 4);
+      const b = hex.substring(4, 6);
+      const a = hex.substring(6, 8);
+      const opacity = parseInt(a, 16) / 255;
+      return { color: `#${r}${g}${b}`, opacity };
+    }
+    
     // Check for RGBA
     const rgbaMatch = cleanColor.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)$/);
     if (rgbaMatch && rgbaMatch[1] && rgbaMatch[2] && rgbaMatch[3] && rgbaMatch[4]) {
@@ -769,7 +794,15 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     if (hex3Match && hex3Match[1]) {
       const hex = hex3Match[1];
       // Expand 3-digit hex to 6-digit
-      return `#${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+      return `#${hex.charAt(0)}${hex.charAt(0)}${hex.charAt(1)}${hex.charAt(1)}${hex.charAt(2)}${hex.charAt(2)}`;
+    }
+    
+    // Check for 4-digit hex with alpha (e.g., #f081) - extract RGB only
+    const hex4Match = cleanColor.match(/^#([0-9a-f]{4})$/);
+    if (hex4Match && hex4Match[1] && hex4Match[1].length === 4) {
+      const hex = hex4Match[1];
+      // Expand 4-digit hex to 6-digit (ignore alpha)
+      return `#${hex.charAt(0)}${hex.charAt(0)}${hex.charAt(1)}${hex.charAt(1)}${hex.charAt(2)}${hex.charAt(2)}`;
     }
     
     // Check for 6-digit hex (already valid format)
@@ -778,10 +811,12 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
       return cleanColor;
     }
     
-    // Check for 8-digit hex (has alpha channel - return null)
+    // Check for 8-digit hex with alpha (e.g., #ff008811) - extract RGB only
     const hex8Match = cleanColor.match(/^#([0-9a-f]{8})$/);
-    if (hex8Match && hex8Match[1]) {
-      return null;
+    if (hex8Match && hex8Match[1] && hex8Match[1].length === 8) {
+      const hex = hex8Match[1];
+      // Extract first 6 characters (RGB only, ignore alpha)
+      return `#${hex.substring(0, 6)}`;
     }
     
     // Check for RGB (e.g., rgb(255, 0, 128))
@@ -797,10 +832,17 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
       return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
     }
     
-    // Check for RGBA (has alpha channel - return null)
+    // Check for RGBA (has alpha channel - extract RGB only)
     const rgbaMatch = cleanColor.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*[\d.]+\s*\)$/);
-    if (rgbaMatch) {
-      return null;
+    if (rgbaMatch && rgbaMatch[1] && rgbaMatch[2] && rgbaMatch[3]) {
+      const r = parseInt(rgbaMatch[1], 10);
+      const g = parseInt(rgbaMatch[2], 10);
+      const b = parseInt(rgbaMatch[3], 10);
+      // Validate RGB values are in range 0-255
+      if (r > 255 || g > 255 || b > 255) return null;
+      
+      const toHex = (n: number) => n.toString(16).padStart(2, '0');
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
     }
     
     // Check for HSL (e.g., hsl(240, 100%, 50%))
@@ -815,10 +857,16 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
       return convertHslToHex(h, s, l);
     }
     
-    // Check for HSLA (has alpha channel - return null)
+    // Check for HSLA (has alpha channel - extract HSL only)
     const hslaMatch = cleanColor.match(/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*[\d.]+\s*\)$/);
-    if (hslaMatch) {
-      return null;
+    if (hslaMatch && hslaMatch[1] && hslaMatch[2] && hslaMatch[3]) {
+      const h = parseInt(hslaMatch[1], 10);
+      const s = parseInt(hslaMatch[2], 10);
+      const l = parseInt(hslaMatch[3], 10);
+      // Validate HSL values
+      if (h > 360 || s > 100 || l > 100) return null;
+      
+      return convertHslToHex(h, s, l);
     }
     
     // If no recognized format, return null
@@ -829,6 +877,22 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     if (!color) return false;
     const hexMatch = color.match(/^#([0-9a-fA-F]{6})$/);
     return hexMatch !== null;
+  }
+
+  function hasAlphaChannel(colorValue: string): boolean {
+    if (!colorValue) return false;
+    
+    const cleanColor = colorValue.trim().toLowerCase();
+    
+    // Check for 4-digit or 8-digit hex with alpha
+    const hex4Match = cleanColor.match(/^#([0-9a-f]{4})$/);
+    const hex8Match = cleanColor.match(/^#([0-9a-f]{8})$/);
+    
+    // Check for RGBA or HSLA
+    const rgbaMatch = cleanColor.match(/^rgba\(/);
+    const hslaMatch = cleanColor.match(/^hsla\(/);
+    
+    return !!(hex4Match || hex8Match || rgbaMatch || hslaMatch);
   }
 
   return (
@@ -883,7 +947,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                 const currentValue = currentValues[key] !== undefined ? currentValues[key] : (value.value || '');
                 const { color, opacity } = isColorType ? parseColorWithOpacity(currentValue) : { color: '', opacity: 1 };
                 const canUseColorPicker = isColorType && isSixDigitHex(color);
-                const canShowOpacitySlider = isColorType && (isSixDigitHex(color) || convertCssColorNameToHex(currentValue || ''));
+                const canShowOpacitySlider = isColorType && (isSixDigitHex(color) || convertCssColorNameToHex(currentValue || '') || hasAlphaChannel(currentValue || ''));
 
                 return (
                   <TableRow key={key}>
