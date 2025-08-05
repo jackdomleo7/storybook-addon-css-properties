@@ -195,6 +195,13 @@ const DefaultValueCell = styled.div`
   }
 `;
 
+const DefaultValueCellColor = styled.div<{ color: string }>`
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: .25rem;
+  background-color: ${({ color }) => color};
+`;
+
 const ColorControlContainer = styled.div`
   display: flex;
   align-items: center;
@@ -999,6 +1006,15 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     return !!(hex4Match || hex8Match || rgbaMatch || hslaMatch);
   }
 
+  function isColourValue(value: string): boolean {
+    return value.startsWith('#') || 
+           value.startsWith('rgb(') || 
+           value.startsWith('rgba(') || 
+           value.startsWith('hsl(') || 
+           value.startsWith('hsla(') || 
+           convertCssColorNameToHex(value) !== null;
+  }
+
   return (
     <AddonPanel {...props}>
       <Container>
@@ -1072,9 +1088,12 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                         </TableCell>
                         
                         <TableCell>
-                          <DefaultValueCell className={value.default ? 'has-value' : ''}>
-                            {value.default || '–'}
-                          </DefaultValueCell>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <DefaultValueCell className={value.default ? 'has-value' : ''}>
+                              {value.default || '–'}
+                            </DefaultValueCell>
+                            {value.default && isColourValue(value.default) && <DefaultValueCellColor color={value.default} />}
+                          </div>
                         </TableCell>
                         
                         <TableCell>
