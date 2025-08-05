@@ -587,14 +587,8 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     const opacity = opacityInput ? parseFloat(opacityInput.value) : 1;
     const finalValue = combineColorAndOpacity(color, opacity);
     
-    // Update state
+    // Update state - this will automatically update the controlled color text input
     setCurrentValues(prev => ({ ...prev, [key]: finalValue }));
-    
-    // Update color text input with the final value (including opacity if < 1)
-    const colorTextInput = colorTextInputRefs.current[key];
-    if (colorTextInput) {
-      colorTextInput.value = finalValue;
-    }
     
     // Update color swatch
     const colorSwatch = colorSwatchRefs.current[key];
@@ -603,7 +597,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     }
     
     emit(EVENTS.REQUEST, { [key]: finalValue });
-  }, [emit, combineColorAndOpacity, setCurrentValues]);
+  }, [emit, combineColorAndOpacity]);
 
   const handleOpacityChange = useCallback((key: string, opacity: number) => {
     const colorInput = inputRefs.current[key];
@@ -642,19 +636,13 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
       }
     }
     
-    // Update state
+    // Update state - this will automatically update the controlled color text input
     setCurrentValues(prev => ({ ...prev, [key]: finalValue }));
     
     // Update opacity display
     const opacityDisplay = opacityDisplayRefs.current[key];
     if (opacityDisplay) {
       opacityDisplay.textContent = `${Math.round(opacity * 100)}%`;
-    }
-    
-    // Update color text input with the final value
-    const colorTextInput = colorTextInputRefs.current[key];
-    if (colorTextInput) {
-      colorTextInput.value = finalValue;
     }
     
     // Update color swatch
@@ -670,28 +658,30 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     const inputElement = inputRefs.current[key];
     const opacityElement = opacityRefs.current[key];
     const opacityDisplay = opacityDisplayRefs.current[key];
-    const colorTextInput = colorTextInputRefs.current[key];
     const colorSwatch = colorSwatchRefs.current[key];
     
-    // Update state
+    // Update state - this will automatically update controlled input values
     setCurrentValues(prev => ({ ...prev, [key]: '' }));
     
-    if (inputElement) {
-      inputElement.value = '';
-      if (opacityElement) {
-        opacityElement.value = '1';
-      }
-      if (opacityDisplay) {
-        opacityDisplay.textContent = '100%';
-      }
-      if (colorTextInput) {
-        colorTextInput.value = '';
-      }
-      if (colorSwatch) {
-        colorSwatch.style.backgroundColor = '#000000';
-      }
-      emit(EVENTS.REQUEST, { [key]: '' });
+    // Reset hidden color input for color controls
+    if (inputElement && inputElement.type === 'color') {
+      inputElement.value = '#000000';
     }
+    
+    // Reset opacity slider and display for color controls
+    if (opacityElement) {
+      opacityElement.value = '1';
+    }
+    if (opacityDisplay) {
+      opacityDisplay.textContent = '100%';
+    }
+    
+    // Reset color swatch background
+    if (colorSwatch) {
+      colorSwatch.style.backgroundColor = '#000000';
+    }
+    
+    emit(EVENTS.REQUEST, { [key]: '' });
   }, [emit]);
 
   const handleClearAll = useCallback(() => {
@@ -704,42 +694,34 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
     const inputElement = inputRefs.current[key];
     const opacityElement = opacityRefs.current[key];
     const opacityDisplay = opacityDisplayRefs.current[key];
-    const colorTextInput = colorTextInputRefs.current[key];
     const colorSwatch = colorSwatchRefs.current[key];
     const originalValue = (config as Record<string, Parameter>)[key]?.value || '';
     const inputType = (config as Record<string, Parameter>)[key]?.control;
     
-    // Update state
+    // Update state - this will automatically update controlled input values
     setCurrentValues(prev => ({ ...prev, [key]: originalValue }));
     
-    if (inputElement) {
-      if (inputType === 'color') {
-        const { color, opacity } = parseColorWithOpacity(originalValue);
-        
-        if (inputElement.type === 'color' && isSixDigitHex(color)) {
-          inputElement.value = color;
-        } else {
-          inputElement.value = originalValue;
-        }
-        
-        if (opacityElement) {
-          opacityElement.value = opacity.toString();
-        }
-        if (opacityDisplay) {
-          opacityDisplay.textContent = `${Math.round(opacity * 100)}%`;
-        }
-        if (colorTextInput) {
-          colorTextInput.value = originalValue;
-        }
-        if (colorSwatch) {
-          colorSwatch.style.backgroundColor = originalValue;
-        }
-      } else {
-        inputElement.value = originalValue;
+    // For color controls, update hidden color input, opacity slider and color swatch
+    if (inputType === 'color') {
+      const { color, opacity } = parseColorWithOpacity(originalValue);
+      
+      // Reset hidden color input to the parsed color (or default to black if no valid color)
+      if (inputElement && inputElement.type === 'color') {
+        inputElement.value = isSixDigitHex(color) ? color : '#000000';
       }
       
-      emit(EVENTS.REQUEST, { [key]: originalValue });
+      if (opacityElement) {
+        opacityElement.value = opacity.toString();
+      }
+      if (opacityDisplay) {
+        opacityDisplay.textContent = `${Math.round(opacity * 100)}%`;
+      }
+      if (colorSwatch) {
+        colorSwatch.style.backgroundColor = originalValue || '#000000';
+      }
     }
+    
+    emit(EVENTS.REQUEST, { [key]: originalValue });
   }, [config, emit, parseColorWithOpacity]);
 
   const handleResetAll = useCallback(() => {
@@ -898,7 +880,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
               {Object.entries(config).map(([key, value]) => {
                 const controlType = value.control || 'text';
                 const isColorType = controlType === 'color';
-                const currentValue = currentValues[key] || value.value || '';
+                const currentValue = currentValues[key] !== undefined ? currentValues[key] : (value.value || '');
                 const { color, opacity } = isColorType ? parseColorWithOpacity(currentValue) : { color: '', opacity: 1 };
                 const canUseColorPicker = isColorType && isSixDigitHex(color);
                 const canShowOpacitySlider = isColorType && (isSixDigitHex(color) || convertCssColorNameToHex(currentValue || ''));
