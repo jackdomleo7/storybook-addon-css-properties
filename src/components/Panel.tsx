@@ -126,9 +126,7 @@ const CategoryHeaderCell = styled.th`
   font-weight: ${({ theme }) => theme.typography.weight.bold};
   color: ${({ theme }) => theme.color.defaultText};
   text-align: left;
-  background: linear-gradient(135deg, ${({ theme }) => theme.background.hoverable}, ${({ theme }) => theme.background.app});
-  border-top: 1px solid ${({ theme }) => theme.appBorderColor};
-  border-bottom: 2px solid ${({ theme }) => theme.color.secondary};
+  border-block: 1px solid ${({ theme }) => theme.appBorderColor};
   position: relative;
 `;
 
