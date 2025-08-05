@@ -1,4 +1,4 @@
-import{j as n}from"./index-ZWZ7WciI.js";import{useMDXComponents as r}from"./index-hvMiGw94.js";import{M as a,T as c,C as i,S as m}from"./blocks-BjqbmYx4.js";import{b as x,C as e}from"./Button.stories-CNcvFOuS.js";import"./iframe-DITcWCkW.js";import"./preload-helper-C1FmrZbK.js";import"./index-CkQ-TQ0c.js";function s(o){const t={code:"code",p:"p",pre:"pre",...r(),...o.components};return n.jsxs(n.Fragment,{children:[n.jsx(a,{of:x}),`
+import{j as n}from"./jsx-runtime-YJVl4s2E.js";import{useMDXComponents as r}from"./index-uPJzhAdP.js";import{M as a,T as c,C as i,S as m}from"./blocks-D_oLyJU5.js";import{b as x,C as e}from"./Button.stories-BkHgRsI0.js";import"./iframe-DgQbaY5b.js";import"./preload-helper-C1FmrZbK.js";import"./index-Bw3xoudo.js";function s(o){const t={code:"code",p:"p",pre:"pre",...r(),...o.components};return n.jsxs(n.Fragment,{children:[n.jsx(a,{of:x}),`
 `,n.jsx(c,{children:"Button"}),`
 `,n.jsxs(t.p,{children:["Example with ",n.jsx(t.code,{children:"Canvas"}),":"]}),`
 `,n.jsx(t.pre,{children:n.jsx(t.code,{className:"language-tsx",children:`<Canvas of={buttonStories.Custom} />

@@ -1,11 +1,11 @@
 try{
-(()=>{var a=__REACT__,{Children:je,Component:He,Fragment:De,Profiler:Ke,PureComponent:Qe,StrictMode:Ye,Suspense:Ve,__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:We,act:Ge,cloneElement:qe,createContext:Ze,createElement:Je,createFactory:Xe,createRef:et,forwardRef:tt,isValidElement:rt,lazy:ot,memo:W,startTransition:at,unstable_act:lt,useCallback:f,useContext:nt,useDebugValue:st,useDeferredValue:it,useEffect:F,useId:ct,useImperativeHandle:dt,useInsertionEffect:mt,useLayoutEffect:ut,useMemo:pt,useReducer:ht,useRef:w,useState:G,useSyncExternalStore:bt,useTransition:gt,version:yt}=__REACT__;var St=__STORYBOOK_API__,{ActiveTabs:kt,Consumer:xt,ManagerContext:Ct,Provider:wt,RequestResponseError:_t,addons:j,combineParameters:Tt,controlOrMetaKey:Ot,controlOrMetaSymbol:It,eventMatchesShortcut:Rt,eventToShortcut:zt,experimental_MockUniversalStore:Pt,experimental_UniversalStore:Bt,experimental_getStatusStore:At,experimental_getTestProviderStore:Mt,experimental_requestResponse:Lt,experimental_useStatusStore:Ut,experimental_useTestProviderStore:Nt,experimental_useUniversalStore:Ft,internal_fullStatusStore:jt,internal_fullTestProviderStore:Ht,internal_universalStatusStore:Dt,internal_universalTestProviderStore:Kt,isMacLike:Qt,isShortcutTaken:Yt,keyToSymbol:Vt,merge:Wt,mockChannel:Gt,optionOrAltSymbol:qt,shortcutMatchesShortcut:Zt,shortcutToHumanString:Jt,types:q,useAddonState:Xt,useArgTypes:er,useArgs:tr,useChannel:Z,useGlobalTypes:rr,useGlobals:or,useParameter:H,useSharedState:ar,useStoryPrepared:lr,useStorybookApi:J,useStorybookState:nr}=__STORYBOOK_API__;var mr=__STORYBOOK_COMPONENTS__,{A:ur,ActionBar:pr,AddonPanel:X,Badge:ee,Bar:hr,Blockquote:br,Button:gr,ClipboardCode:yr,Code:fr,DL:$r,Div:vr,DocumentWrapper:Er,EmptyTabContent:Sr,ErrorFormatter:kr,FlexBar:xr,Form:Cr,H1:wr,H2:_r,H3:Tr,H4:Or,H5:Ir,H6:Rr,HR:zr,IconButton:Pr,Img:Br,LI:Ar,Link:Mr,ListItem:Lr,Loader:Ur,Modal:Nr,OL:Fr,P:jr,Placeholder:Hr,Pre:Dr,ProgressSpinner:Kr,ResetWrapper:Qr,ScrollArea:Yr,Separator:Vr,Spaced:Wr,Span:Gr,StorybookIcon:qr,StorybookLogo:Zr,SyntaxHighlighter:Jr,TT:Xr,TabBar:eo,TabButton:to,TabWrapper:ro,Table:oo,Tabs:ao,TabsState:lo,TooltipLinkList:no,TooltipMessage:so,TooltipNote:io,UL:co,WithTooltip:mo,WithTooltipPure:uo,Zoom:po,codeCommon:ho,components:bo,createCopyToClipboardFunction:go,getStoryHref:yo,interleaveSeparators:fo,nameSpaceClassNames:$o,resetComponents:vo,withReset:Eo}=__STORYBOOK_COMPONENTS__;var wo=__STORYBOOK_THEMING__,{CacheProvider:_o,ClassNames:To,Global:Oo,ThemeProvider:Io,background:Ro,color:zo,convert:Po,create:Bo,createCache:Ao,createGlobal:Mo,createReset:Lo,css:Uo,darken:No,ensure:Fo,ignoreSsrWarning:jo,isPropValid:Ho,jsx:Do,keyframes:Ko,lighten:Qo,styled:u,themes:Yo,typography:Vo,useTheme:Wo,withTheme:Go}=__STORYBOOK_THEMING__;var Y="storybook-addon-css-properties",oe=`${Y}/panel`,ae="cssVars",k={REQUEST:`${Y}/request`},he=u.div`
+(()=>{var l=__REACT__,{Children:Ze,Component:Xe,Fragment:Je,Profiler:er,PureComponent:rr,StrictMode:tr,Suspense:or,__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:ar,act:nr,cloneElement:lr,createContext:sr,createElement:cr,createFactory:ir,createRef:dr,forwardRef:pr,isValidElement:mr,lazy:ur,memo:X,startTransition:hr,unstable_act:gr,useCallback:v,useContext:br,useDebugValue:fr,useDeferredValue:yr,useEffect:Q,useId:$r,useImperativeHandle:Er,useInsertionEffect:kr,useLayoutEffect:vr,useMemo:W,useReducer:xr,useRef:I,useState:J,useSyncExternalStore:Sr,useTransition:Cr,version:wr}=__REACT__;var Ar=__STORYBOOK_API__,{ActiveTabs:zr,Consumer:Rr,ManagerContext:Pr,Provider:Br,RequestResponseError:Mr,addons:K,combineParameters:Lr,controlOrMetaKey:Nr,controlOrMetaSymbol:Ur,eventMatchesShortcut:jr,eventToShortcut:Fr,experimental_MockUniversalStore:Hr,experimental_UniversalStore:Dr,experimental_getStatusStore:Qr,experimental_getTestProviderStore:Wr,experimental_requestResponse:Kr,experimental_useStatusStore:Yr,experimental_useTestProviderStore:Vr,experimental_useUniversalStore:Gr,internal_fullStatusStore:qr,internal_fullTestProviderStore:Zr,internal_universalStatusStore:Xr,internal_universalTestProviderStore:Jr,isMacLike:et,isShortcutTaken:rt,keyToSymbol:tt,merge:ot,mockChannel:at,optionOrAltSymbol:nt,shortcutMatchesShortcut:lt,shortcutToHumanString:st,types:ee,useAddonState:ct,useArgTypes:it,useArgs:dt,useChannel:re,useGlobalTypes:pt,useGlobals:mt,useParameter:Y,useSharedState:ut,useStoryPrepared:ht,useStorybookApi:te,useStorybookState:gt}=__STORYBOOK_API__;var Et=__STORYBOOK_COMPONENTS__,{A:kt,ActionBar:vt,AddonPanel:oe,Badge:ae,Bar:xt,Blockquote:St,Button:Ct,ClipboardCode:wt,Code:_t,DL:Tt,Div:Ot,DocumentWrapper:It,EmptyTabContent:At,ErrorFormatter:zt,FlexBar:Rt,Form:Pt,H1:Bt,H2:Mt,H3:Lt,H4:Nt,H5:Ut,H6:jt,HR:Ft,IconButton:Ht,Img:Dt,LI:Qt,Link:Wt,ListItem:Kt,Loader:Yt,Modal:Vt,OL:Gt,P:qt,Placeholder:Zt,Pre:Xt,ProgressSpinner:Jt,ResetWrapper:eo,ScrollArea:ro,Separator:to,Spaced:oo,Span:ao,StorybookIcon:no,StorybookLogo:lo,SyntaxHighlighter:so,TT:co,TabBar:io,TabButton:po,TabWrapper:mo,Table:uo,Tabs:ho,TabsState:go,TooltipLinkList:bo,TooltipMessage:fo,TooltipNote:yo,UL:$o,WithTooltip:Eo,WithTooltipPure:ko,Zoom:vo,codeCommon:xo,components:So,createCopyToClipboardFunction:Co,getStoryHref:wo,interleaveSeparators:_o,nameSpaceClassNames:To,resetComponents:Oo,withReset:Io}=__STORYBOOK_COMPONENTS__;var Bo=__STORYBOOK_THEMING__,{CacheProvider:Mo,ClassNames:Lo,Global:No,ThemeProvider:Uo,background:jo,color:Fo,convert:Ho,create:Do,createCache:Qo,createGlobal:Wo,createReset:Ko,css:Yo,darken:Vo,ensure:Go,ignoreSsrWarning:qo,isPropValid:Zo,jsx:Xo,keyframes:Jo,lighten:ea,styled:g,themes:ra,typography:ta,useTheme:oa,withTheme:aa}=__STORYBOOK_THEMING__;var Z="storybook-addon-css-properties",ce=`${Z}/panel`,ie="cssVars",w={REQUEST:`${Z}/request`},$e=g.div`
   padding: 0;
   font-family: ${({theme:e})=>e.typography.fonts.base};
   background-color: ${({theme:e})=>e.background.content};
   height: 100%;
   overflow-y: auto;
-`,be=u.div`
+`,Ee=g.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -15,13 +15,13 @@ try{
   position: sticky;
   top: 0;
   z-index: 1;
-`,ge=u.div`
+`,ke=g.div`
   font-size: ${({theme:e})=>e.typography.size.s1/16}rem;
   color: ${({theme:e})=>e.color.mediumdark};
-`,te=u.div`
+`,ne=g.div`
   display: flex;
   gap: .375rem;
-`,K=u.button`
+`,G=g.button`
   font-family: ${({theme:e})=>e.typography.fonts.base};
   font-size: ${({theme:e})=>e.typography.size.s1/16}rem;
   font-weight: ${({theme:e})=>e.typography.weight.regular};
@@ -31,7 +31,10 @@ try{
   background-color: ${({theme:e})=>e.background.content};
   color: ${({theme:e})=>e.color.defaultText};
   cursor: pointer;
-  transition: all 0.15s ease-out;
+  
+  @media (prefers-reduced-motion: no-preference) {
+    transition: all 0.15s ease-out;
+  }
 
   &:hover {
     border-color: ${({theme:e})=>e.color.secondary};
@@ -47,17 +50,18 @@ try{
   &:active {
     background-color: ${({theme:e})=>e.background.app};
   }
-`,ye=u.div`
-  display: table;
+`,ve=g.table`
   width: 100%;
   border-collapse: collapse;
-`,fe=u.div`
-  display: table-header-group;
+  border: 1px solid ${({theme:e})=>e.appBorderColor};
+  border-radius: .25rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+`,xe=g.thead`
   background: ${({theme:e})=>e.background.app};
-`,$e=u.div`
-  display: table-row;
-`,B=u.div`
-  display: table-cell;
+`,Se=g.tr`
+  /* No additional styles needed */
+`,L=g.th`
   padding: .5rem .9375rem;
   font-family: ${({theme:e})=>e.typography.fonts.base};
   font-size: ${({theme:e})=>e.typography.size.s1/16}rem;
@@ -82,33 +86,61 @@ try{
     width: 1%;
     white-space: nowrap;
   }
-`,ve=u.div`
-  display: table-row-group;
-`,Ee=u.div`
-  display: table-row;
-  
+`,Ce=g.tbody`
+  /* No additional styles needed */
+`,we=g.tr`
+  background: ${({theme:e})=>e.background.app};
+`,_e=g.th`
+  padding: .75rem .9375rem;
+  font-family: ${({theme:e})=>e.typography.fonts.base};
+  font-size: ${({theme:e})=>e.typography.size.s2/16}rem;
+  font-weight: ${({theme:e})=>e.typography.weight.bold};
+  color: ${({theme:e})=>e.color.defaultText};
+  text-align: left;
+  background: linear-gradient(135deg, ${({theme:e})=>e.background.hoverable}, ${({theme:e})=>e.background.app});
+  border-top: 1px solid ${({theme:e})=>e.appBorderColor};
+  border-bottom: 2px solid ${({theme:e})=>e.color.secondary};
+  position: relative;
+`,Te=g.tr`
+  @media (prefers-reduced-motion: no-preference) {
+    transition: background-color 0.15s ease;
+  }
+
   &:hover {
     background-color: ${({theme:e})=>e.background.hoverable};
   }
-`,A=u.div`
-  display: table-cell;
+  
+  &:last-child td {
+    border-bottom: none;
+  }
+  
+  &:focus-within {
+    background-color: ${({theme:e})=>e.background.hoverable};
+    outline: 2px solid ${({theme:e})=>e.color.secondary};
+    outline-offset: -2px;
+  }
+`,N=g.td`
   padding: .625rem .9375rem;
   vertical-align: middle;
   border-bottom: 1px solid ${({theme:e})=>e.appBorderColor};
   font-family: ${({theme:e})=>e.typography.fonts.base};
   font-size: ${({theme:e})=>e.typography.size.s2/16}rem;
-`,Se=u.div`
+`,Oe=g.div`
   font-family: ${({theme:e})=>e.typography.fonts.mono};
   font-size: ${({theme:e})=>e.typography.size.s1/16}rem;
   font-weight: ${({theme:e})=>e.typography.weight.bold};
   color: ${({theme:e})=>e.color.secondary};
   margin-bottom: .25rem;
   user-select: all;
-`,ke=u.div`
+  background: ${({theme:e})=>e.background.app};
+  padding: .125rem .25rem;
+  border-radius: .125rem;
+  display: inline-block;
+`,Ie=g.div`
   font-size: ${({theme:e})=>e.typography.size.s1/16}rem;
   color: ${({theme:e})=>e.color.mediumdark};
   line-height: 1.4;
-`,xe=u.div`
+`,Ae=g.div`
   font-family: ${({theme:e})=>e.typography.fonts.mono};
   font-size: ${({theme:e})=>e.typography.size.s1/16}rem;
   color: ${({theme:e})=>e.color.mediumdark};
@@ -122,11 +154,11 @@ try{
     display: inline-flex;
     user-select: all;
   }
-`,Ce=u.div`
+`,ze=g.div`
   display: flex;
   align-items: center;
   gap: .5rem;
-`,we=u.div`
+`,Re=g.div`
   width: 2rem;
   height: 2rem;
   border-radius: .25rem;
@@ -135,7 +167,10 @@ try{
   cursor: pointer;
   position: relative;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-  transition: all 0.15s ease-out;
+  
+  @media (prefers-reduced-motion: no-preference) {
+    transition: all 0.15s ease-out;
+  }
   
   &:hover {
     border-color: ${({theme:e})=>e.color.secondary};
@@ -144,9 +179,14 @@ try{
   
   &:focus-within,
   &:focus {
-    outline: none;
+    outline: 2px solid ${({theme:e})=>e.color.secondary};
+    outline-offset: 2px;
     border-color: ${({theme:e})=>e.color.secondary};
-    box-shadow: 0 0 0 .125rem ${({theme:e})=>e.color.secondary}33, inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:focus:not(:focus-visible) {
+    outline: none;
   }
   
   /* Checkered background for transparency */
@@ -167,7 +207,7 @@ try{
     border-radius: calc(.25rem - 1px);
     z-index: -1;
   }
-`,_e=u.input`
+`,Pe=g.input`
   position: absolute;
   top: 0;
   left: 0;
@@ -175,15 +215,15 @@ try{
   height: 100%;
   opacity: 0;
   cursor: pointer;
-`,Te=u.div`
+`,Be=g.div`
   display: flex;
   flex-direction: column;
   gap: .5rem;
-`,D=u.div`
+`,V=g.div`
   display: flex;
   align-items: center;
   gap: .5rem;
-`,Q=u.input`
+`,q=g.input`
   font-family: ${({theme:e})=>e.typography.fonts.mono};
   font-size: ${({theme:e})=>e.typography.size.s1/16}rem;
   padding: .375rem .5rem;
@@ -296,24 +336,24 @@ try{
     color: ${({theme:e})=>e.color.mediumdark};
     font-style: italic;
   }
-`,Oe=u(Q)`
+`,Me=g(q)`
   font-family: ${({theme:e})=>e.typography.fonts.mono};
   min-width: 8rem;
   flex: 1;
-`,Ie=u.label`
+`,Le=g.label`
   font-size: ${({theme:e})=>e.typography.size.s1/16}rem;
   color: ${({theme:e})=>e.color.mediumdark};
   white-space: nowrap;
-`,Re=u.span`
+`,Ne=g.span`
   font-size: ${({theme:e})=>e.typography.size.s1/16}rem;
   color: ${({theme:e})=>e.color.defaultText};
   font-family: ${({theme:e})=>e.typography.fonts.mono};
   min-width: 2.5rem;
   text-align: right;
-`,re=u(K)`
+`,le=g(G)`
   padding: .25rem .5rem;
   font-size: ${({theme:e})=>e.typography.size.s1/16}rem;
-`,ze=u.div`
+`,Ue=g.div`
   padding: 2.5rem 1.25rem;
   text-align: center;
   color: ${({theme:e})=>e.color.mediumdark};
@@ -340,5 +380,5 @@ try{
     border-radius: .1875rem;
     font-size: ${({theme:e})=>e.typography.size.s1/16}rem;
   }
-`,Pe=W(function(e){let p=H(ae,{}),b=Z({}),E=w({}),_=w({}),T=w({}),x=w({}),S=w({}),[M,v]=G({});F(()=>{let t={};Object.entries(p).forEach(([r,l])=>{let o=l.value||"";t[r]=o,b(k.REQUEST,{[r]:o})}),v(t)},[p,b]),F(()=>{Object.entries(M).forEach(([t,r])=>{let l=S.current[t],o=p[t];l&&o?.control==="color"&&(l.style.backgroundColor=r||"#000000")})},[M,p]);let O=f(t=>{if(!t)return{color:"#000000",opacity:1};let r=t.trim().toLowerCase(),l=r.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)$/);if(l&&l[1]&&l[2]&&l[3]&&l[4]){let c=parseInt(l[1],10),i=parseInt(l[2],10),d=parseInt(l[3],10),m=parseFloat(l[4]);if(c<=255&&i<=255&&d<=255&&m>=0&&m<=1){let n=h=>h.toString(16).padStart(2,"0");return{color:`#${n(c)}${n(i)}${n(d)}`,opacity:m}}}let o=r.match(/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d.]+)\s*\)$/);if(o&&o[1]&&o[2]&&o[3]&&o[4]){let c=parseInt(o[1],10),i=parseInt(o[2],10),d=parseInt(o[3],10),m=parseFloat(o[4]);if(c<=360&&i<=100&&d<=100&&m>=0&&m<=1){let n=V(c,i,d);if(n)return{color:n,opacity:m}}}let s=me(t);return s&&C(s)?{color:s,opacity:1}:{color:t,opacity:1}},[]),I=f((t,r)=>{if(r===1)return t;let l=t.match(/^#([0-9a-fA-F]{6})$/);if(l&&l[1]){let o=l[1],s=parseInt(o.substring(0,2),16),c=parseInt(o.substring(2,4),16),i=parseInt(o.substring(4,6),16);return`rgba(${s}, ${c}, ${i}, ${r})`}return t},[]),L=f(t=>{let r=document.createElement("div");if(r.style.color=t,r.style.color){document.body.appendChild(r);let l=window.getComputedStyle(r).color;document.body.removeChild(r);let o=l.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/);if(o&&o[1]&&o[2]&&o[3]){let s=parseInt(o[1],10),c=parseInt(o[2],10),i=parseInt(o[3],10),d=m=>m.toString(16).padStart(2,"0");return`#${d(s)}${d(c)}${d(i)}`}}return null},[]),le=f((t,r)=>{v(l=>({...l,[t]:r})),b(k.REQUEST,{[t]:r})},[b]),ne=f((t,r)=>{v(n=>({...n,[t]:r}));let{color:l,opacity:o}=O(r),s=E.current[t];s&&C(l)&&(s.value=l);let c=_.current[t],i=T.current[t],d=C(l)||L(r);c&&d&&(c.value=o.toString()),i&&(i.textContent=`${Math.round(o*100)}%`);let m=S.current[t];m&&(m.style.backgroundColor=r),b(k.REQUEST,{[t]:r})},[b,O,L]),se=f((t,r)=>{let l=_.current[t],o=l?parseFloat(l.value):1,s=I(r,o);v(d=>({...d,[t]:s}));let c=x.current[t];c&&(c.value=s);let i=S.current[t];i&&(i.style.backgroundColor=s),b(k.REQUEST,{[t]:s})},[b,I,v]),ie=f((t,r)=>{let l=E.current[t],o=l?l.value:"#000000",s;if(r===1)s=o;else if(s=I(o,r),s===o&&r!==1){let m=x.current[t],n=m?m.value:o,h=document.createElement("div");if(h.style.color=n,h.style.color){document.body.appendChild(h);let g=window.getComputedStyle(h).color;document.body.removeChild(h);let y=g.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/);if(y&&y[1]&&y[2]&&y[3]){let $=parseInt(y[1],10),ue=parseInt(y[2],10),pe=parseInt(y[3],10);s=`rgba(${$}, ${ue}, ${pe}, ${r})`}}}v(m=>({...m,[t]:s}));let c=T.current[t];c&&(c.textContent=`${Math.round(r*100)}%`);let i=x.current[t];i&&(i.value=s);let d=S.current[t];d&&(d.style.backgroundColor=s),b(k.REQUEST,{[t]:s})},[b,I]),U=f(t=>{let r=E.current[t],l=_.current[t],o=T.current[t],s=x.current[t],c=S.current[t];v(i=>({...i,[t]:""})),r&&(r.value="",l&&(l.value="1"),o&&(o.textContent="100%"),s&&(s.value=""),c&&(c.style.backgroundColor="#000000"),b(k.REQUEST,{[t]:""}))},[b]),ce=f(()=>{Object.keys(p).forEach(t=>{U(t)})},[p,U]),N=f(t=>{let r=E.current[t],l=_.current[t],o=T.current[t],s=x.current[t],c=S.current[t],i=p[t]?.value||"",d=p[t]?.control;if(v(m=>({...m,[t]:i})),r){if(d==="color"){let{color:m,opacity:n}=O(i);r.type==="color"&&C(m)?r.value=m:r.value=i,l&&(l.value=n.toString()),o&&(o.textContent=`${Math.round(n*100)}%`),s&&(s.value=i),c&&(c.style.backgroundColor=i)}else r.value=i;b(k.REQUEST,{[t]:i})}},[p,b,O]),de=f(()=>{Object.entries(p).forEach(([t,r])=>{N(t)})},[p,N]),V=f((t,r,l)=>{let o=t/360,s=r/100,c=l/100,i=(g,y,$)=>($<0&&($+=1),$>1&&($-=1),$<1/6?g+(y-g)*6*$:$<1/2?y:$<2/3?g+(y-g)*(2/3-$)*6:g),d,m,n;if(s===0)d=m=n=c;else{let g=c<.5?c*(1+s):c+s-c*s,y=2*c-g;d=i(y,g,o+1/3),m=i(y,g,o),n=i(y,g,o-1/3)}let h=g=>Math.round(g*255).toString(16).padStart(2,"0");return`#${h(d)}${h(m)}${h(n)}`},[]);function me(t){let r=t.trim().toLowerCase(),l=r.match(/^#([0-9a-f]{3})$/);if(l&&l[1]){let d=l[1];return`#${d[0]}${d[0]}${d[1]}${d[1]}${d[2]}${d[2]}`}let o=r.match(/^#([0-9a-f]{6})$/);if(o&&o[1])return r;let s=r.match(/^#([0-9a-f]{8})$/);if(s&&s[1])return null;let c=r.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/);if(c&&c[1]&&c[2]&&c[3]){let d=parseInt(c[1],10),m=parseInt(c[2],10),n=parseInt(c[3],10);if(d>255||m>255||n>255)return null;let h=g=>g.toString(16).padStart(2,"0");return`#${h(d)}${h(m)}${h(n)}`}if(r.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*[\d.]+\s*\)$/))return null;let i=r.match(/^hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)$/);if(i&&i[1]&&i[2]&&i[3]){let d=parseInt(i[1],10),m=parseInt(i[2],10),n=parseInt(i[3],10);return d>360||m>100||n>100?null:V(d,m,n)}return r.match(/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*[\d.]+\s*\)$/),null}function C(t){return t?t.match(/^#([0-9a-fA-F]{6})$/)!==null:!1}return a.createElement(X,{...e},a.createElement(he,null,a.createElement(be,null,a.createElement(ge,null,a.createElement("span",{id:"clear-label"},"Clear uses component defaults")," \u2022 ",a.createElement("span",{id:"reset-label"},"Reset uses story defaults")),a.createElement(te,null,a.createElement(K,{onClick:ce,title:"Use the component's default values","aria-controls":Object.keys(p).join(" "),"aria-describedby":"clear-label"},"Clear all"),a.createElement(K,{onClick:de,title:"Use the story's default values","aria-controls":Object.keys(p).join(" "),"aria-describedby":"reset-label"},"Reset all"))),Object.keys(p).length===0?a.createElement(ze,null,a.createElement("h3",null,"No CSS Properties configured"),a.createElement("p",null,"Add CSS variables to your story using the ",a.createElement("code",null,"cssVars")," parameter.")):a.createElement(ye,null,a.createElement(fe,null,a.createElement($e,null,a.createElement(B,null,"Name"),a.createElement(B,null,"Default"),a.createElement(B,null,"Control"),a.createElement(B,null,"Actions"))),a.createElement(ve,null,Object.entries(p).map(([t,r])=>{let l=r.control||"text",o=l==="color",s=M[t]||r.value||"",{color:c,opacity:i}=o?O(s):{color:"",opacity:1},d=o&&C(c),m=o&&(C(c)||L(s||""));return a.createElement(Ee,{key:t},a.createElement(A,null,a.createElement(Se,null,t),r.description&&a.createElement(ke,{id:`${t}-description`},r.description)),a.createElement(A,null,a.createElement(xe,{className:r.default?"has-value":""},r.default||"\u2013")),a.createElement(A,null,a.createElement(Te,null,o?a.createElement(a.Fragment,null,a.createElement(D,null,a.createElement(Ce,null,a.createElement(we,{ref:n=>{S.current[t]=n},color:d?I(c,i):s||"#000000",role:"button",tabIndex:0,"aria-label":`Color swatch for ${t}. Current color: ${s||"not set"}. Click to open color picker.`,onKeyDown:n=>{if(n.key==="Enter"||n.key===" "){n.preventDefault();let h=E.current[t];h&&h.click()}}},a.createElement(_e,{ref:n=>{E.current[t]=n},id:t,type:"color",value:d?c:"#000000",onChange:n=>se(t,n.target.value),"aria-label":`Color picker for ${t}`,"aria-describedby":r.description?`${t}-description`:void 0})),a.createElement(Oe,{ref:n=>{x.current[t]=n},type:"text",value:s,onChange:n=>ne(t,n.target.value),placeholder:"Enter color","aria-label":`Color value for ${t}`,"aria-describedby":r.description?`${t}-description`:void 0}))),m&&a.createElement(D,null,a.createElement(Ie,{htmlFor:`${t}-opacity`},"Opacity:"),a.createElement(Q,{ref:n=>{_.current[t]=n},id:`${t}-opacity`,type:"range",min:"0",max:"1",step:"0.01",value:i.toString(),onChange:n=>ie(t,parseFloat(n.target.value)),"aria-label":`Opacity for ${t}`,"aria-valuetext":`${Math.round(i*100)} percent`,"aria-describedby":`${t}-opacity-value`}),a.createElement(Re,{ref:n=>{T.current[t]=n},id:`${t}-opacity-value`},Math.round(i*100),"%"))):a.createElement(D,null,a.createElement(Q,{ref:n=>{E.current[t]=n},id:t,type:l,value:s,onChange:n=>le(t,n.target.value),placeholder:`Enter ${l}`,step:l==="number"?1:void 0,"aria-label":`${l} input for ${t}`,"aria-describedby":r.description?`${t}-description`:void 0})))),a.createElement(A,null,a.createElement(te,null,a.createElement(re,{onClick:()=>U(t),title:"Use component default","aria-controls":t,"aria-describedby":"clear-label"},"Clear"),a.createElement(re,{onClick:()=>N(t),title:"Use story default","aria-controls":t,"aria-describedby":"reset-label"},"Reset"))))})))))});function Be(){let e=J().getSelectedPanel(),p=H(ae,{}),b=Object.keys(p).length;return a.createElement("div",{style:{display:"flex",alignItems:"center",gap:6}},a.createElement("span",null,"CSS Properties"),b===0?null:a.createElement(ee,{compact:!0,status:e===oe?"active":"neutral"},b))}j.register(Y,e=>{j.add(oe,{type:q.PANEL,title:Be,match:({viewMode:p})=>p==="story",render:({active:p})=>a.createElement(Pe,{active:p??!1})})});})();
+`;function U(e){return e.startsWith("--")}function je(e){let f={};return Object.entries(e).forEach(([b,E])=>{U(b)?f[b]=E:Object.entries(E).forEach(([$,x])=>{U($)&&(f[$]=x)})}),f}function Fe(e){let f=[],b=[],E=new Map;return Object.entries(e).forEach(([$,x])=>{if(U($))b.push({key:$,value:x});else{let _=[];Object.entries(x).forEach(([S,T])=>{U(S)&&_.push({key:S,value:T})}),_.length>0&&E.set($,_)}}),b.length>0&&f.push({category:null,properties:b}),E.forEach(($,x)=>{f.push({category:x,properties:$})}),f}var He=X(function(e){let f=Y(ie,{}),b=re({}),E=I({}),$=I({}),x=I({}),_=I({}),S=I({}),[T,C]=J({}),k=W(()=>je(f),[f]),de=W(()=>Fe(f),[f]);Q(()=>{let t={};Object.entries(k).forEach(([a,r])=>{let n=r.value||"";t[a]=n,b(w.REQUEST,{[a]:n})}),C(t)},[k,b]),Q(()=>{Object.entries(T).forEach(([t,a])=>{let r=S.current[t],n=k[t];r&&n?.control==="color"&&(r.style.backgroundColor=a||"#000000")})},[T,k]);let A=v(t=>{if(!t)return{color:"#000000",opacity:1};let a=t.trim().toLowerCase(),r=a.match(/^#([0-9a-f]{4})$/);if(r&&r[1]&&r[1].length===4){let s=r[1],m=s.charAt(0)+s.charAt(0),u=s.charAt(1)+s.charAt(1),d=s.charAt(2)+s.charAt(2),o=s.charAt(3)+s.charAt(3),h=parseInt(o,16)/255;return{color:`#${m}${u}${d}`,opacity:h}}let n=a.match(/^#([0-9a-f]{8})$/);if(n&&n[1]&&n[1].length===8){let s=n[1],m=s.substring(0,2),u=s.substring(2,4),d=s.substring(4,6),o=s.substring(6,8),h=parseInt(o,16)/255;return{color:`#${m}${u}${d}`,opacity:h}}let c=a.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)$/);if(c&&c[1]&&c[2]&&c[3]&&c[4]){let s=parseInt(c[1],10),m=parseInt(c[2],10),u=parseInt(c[3],10),d=parseFloat(c[4]);if(s<=255&&m<=255&&u<=255&&d>=0&&d<=1){let o=h=>h.toString(16).padStart(2,"0");return{color:`#${o(s)}${o(m)}${o(u)}`,opacity:d}}}let i=a.match(/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d.]+)\s*\)$/);if(i&&i[1]&&i[2]&&i[3]&&i[4]){let s=parseInt(i[1],10),m=parseInt(i[2],10),u=parseInt(i[3],10),d=parseFloat(i[4]);if(s<=360&&m<=100&&u<=100&&d>=0&&d<=1){let o=D(s,m,u);if(o)return{color:o,opacity:d}}}let p=fe(t);return p&&O(p)?{color:p,opacity:1}:{color:t,opacity:1}},[]),z=v((t,a)=>{if(a===1)return t;let r=t.match(/^#([0-9a-fA-F]{6})$/);if(r&&r[1]){let n=r[1],c=parseInt(n.substring(0,2),16),i=parseInt(n.substring(2,4),16),p=parseInt(n.substring(4,6),16);return`rgba(${c}, ${i}, ${p}, ${a})`}return t},[]),j=v(t=>{let a=document.createElement("div");if(a.style.color=t,a.style.color){document.body.appendChild(a);let r=window.getComputedStyle(a).color;document.body.removeChild(a);let n=r.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)$/);if(n&&n[1]&&n[2]&&n[3]){let c=parseInt(n[1],10),i=parseInt(n[2],10),p=parseInt(n[3],10),s=m=>m.toString(16).padStart(2,"0");return`#${s(c)}${s(i)}${s(p)}`}}return null},[]),pe=v((t,a)=>{C(r=>({...r,[t]:a})),b(w.REQUEST,{[t]:a})},[b]),me=v((t,a)=>{C(u=>({...u,[t]:a}));let{color:r,opacity:n}=A(a),c=E.current[t];c&&O(r)&&(c.value=r);let i=$.current[t],p=x.current[t],s=O(r)||j(a);i&&s&&(i.value=n.toString()),p&&(p.textContent=`${Math.round(n*100)}%`);let m=S.current[t];m&&(m.style.backgroundColor=a),b(w.REQUEST,{[t]:a})},[b,A,j]),ue=v((t,a)=>{let r=$.current[t],n=r?parseFloat(r.value):1,c=z(a,n);C(p=>({...p,[t]:c}));let i=S.current[t];i&&(i.style.backgroundColor=c),b(w.REQUEST,{[t]:c})},[b,z]),he=v((t,a)=>{let r=E.current[t],n=r?r.value:"#000000",c;if(a===1)c=n;else if(c=z(n,a),c===n&&a!==1){let s=_.current[t],m=s?s.value:n,u=document.createElement("div");if(u.style.color=m,u.style.color){document.body.appendChild(u);let d=window.getComputedStyle(u).color;document.body.removeChild(u);let o=d.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/);if(o&&o[1]&&o[2]&&o[3]){let h=parseInt(o[1],10),y=parseInt(o[2],10),R=parseInt(o[3],10);c=`rgba(${h}, ${y}, ${R}, ${a})`}}}C(s=>({...s,[t]:c}));let i=x.current[t];i&&(i.textContent=`${Math.round(a*100)}%`);let p=S.current[t];p&&(p.style.backgroundColor=c),b(w.REQUEST,{[t]:c})},[b,z]),F=v(t=>{let a=E.current[t],r=$.current[t],n=x.current[t],c=S.current[t];C(i=>({...i,[t]:""})),a&&a.type==="color"&&(a.value="#000000"),r&&(r.value="1"),n&&(n.textContent="100%"),c&&(c.style.backgroundColor="#000000"),b(w.REQUEST,{[t]:""})},[b]),ge=v(()=>{Object.keys(k).forEach(t=>{F(t)})},[k,F]),H=v(t=>{let a=E.current[t],r=$.current[t],n=x.current[t],c=S.current[t],i=k[t]?.value||"",p=k[t]?.control;if(C(s=>({...s,[t]:i})),p==="color"){let{color:s,opacity:m}=A(i);a&&a.type==="color"&&(a.value=O(s)?s:"#000000"),r&&(r.value=m.toString()),n&&(n.textContent=`${Math.round(m*100)}%`),c&&(c.style.backgroundColor=i||"#000000")}b(w.REQUEST,{[t]:i})},[k,b,A]),be=v(()=>{Object.entries(k).forEach(([t,a])=>{H(t)})},[k,H]),D=v((t,a,r)=>{let n=t/360,c=a/100,i=r/100,p=(o,h,y)=>(y<0&&(y+=1),y>1&&(y-=1),y<1/6?o+(h-o)*6*y:y<1/2?h:y<2/3?o+(h-o)*(2/3-y)*6:o),s,m,u;if(c===0)s=m=u=i;else{let o=i<.5?i*(1+c):i+c-i*c,h=2*i-o;s=p(h,o,n+1/3),m=p(h,o,n),u=p(h,o,n-1/3)}let d=o=>Math.round(o*255).toString(16).padStart(2,"0");return`#${d(s)}${d(m)}${d(u)}`},[]);function fe(t){let a=t.trim().toLowerCase(),r=a.match(/^#([0-9a-f]{3})$/);if(r&&r[1]){let d=r[1];return`#${d.charAt(0)}${d.charAt(0)}${d.charAt(1)}${d.charAt(1)}${d.charAt(2)}${d.charAt(2)}`}let n=a.match(/^#([0-9a-f]{4})$/);if(n&&n[1]&&n[1].length===4){let d=n[1];return`#${d.charAt(0)}${d.charAt(0)}${d.charAt(1)}${d.charAt(1)}${d.charAt(2)}${d.charAt(2)}`}let c=a.match(/^#([0-9a-f]{6})$/);if(c&&c[1])return a;let i=a.match(/^#([0-9a-f]{8})$/);if(i&&i[1]&&i[1].length===8)return`#${i[1].substring(0,6)}`;let p=a.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/);if(p&&p[1]&&p[2]&&p[3]){let d=parseInt(p[1],10),o=parseInt(p[2],10),h=parseInt(p[3],10);if(d>255||o>255||h>255)return null;let y=R=>R.toString(16).padStart(2,"0");return`#${y(d)}${y(o)}${y(h)}`}let s=a.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*[\d.]+\s*\)$/);if(s&&s[1]&&s[2]&&s[3]){let d=parseInt(s[1],10),o=parseInt(s[2],10),h=parseInt(s[3],10);if(d>255||o>255||h>255)return null;let y=R=>R.toString(16).padStart(2,"0");return`#${y(d)}${y(o)}${y(h)}`}let m=a.match(/^hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)$/);if(m&&m[1]&&m[2]&&m[3]){let d=parseInt(m[1],10),o=parseInt(m[2],10),h=parseInt(m[3],10);return d>360||o>100||h>100?null:D(d,o,h)}let u=a.match(/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*[\d.]+\s*\)$/);if(u&&u[1]&&u[2]&&u[3]){let d=parseInt(u[1],10),o=parseInt(u[2],10),h=parseInt(u[3],10);return d>360||o>100||h>100?null:D(d,o,h)}return null}function O(t){return t?t.match(/^#([0-9a-fA-F]{6})$/)!==null:!1}function ye(t){if(!t)return!1;let a=t.trim().toLowerCase(),r=a.match(/^#([0-9a-f]{4})$/),n=a.match(/^#([0-9a-f]{8})$/),c=a.match(/^rgba\(/),i=a.match(/^hsla\(/);return!!(r||n||c||i)}return l.createElement(oe,{...e},l.createElement($e,null,l.createElement(Ee,null,l.createElement(ke,null,l.createElement("span",{id:"clear-label"},"Clear uses component defaults")," \u2022 ",l.createElement("span",{id:"reset-label"},"Reset uses story defaults")),l.createElement(ne,null,l.createElement(G,{onClick:ge,title:"Use the component's default values","aria-controls":Object.keys(k).join(" "),"aria-describedby":"clear-label"},"Clear all"),l.createElement(G,{onClick:be,title:"Use the story's default values","aria-controls":Object.keys(k).join(" "),"aria-describedby":"reset-label"},"Reset all"))),Object.keys(k).length===0?l.createElement(Ue,null,l.createElement("h3",null,"No CSS Properties configured"),l.createElement("p",null,"Add CSS variables to your story using the ",l.createElement("code",null,"cssVars")," parameter.")):l.createElement(ve,{role:"table","aria-label":"CSS Properties Configuration"},l.createElement(xe,null,l.createElement(Se,null,l.createElement(L,{scope:"col"},"Name"),l.createElement(L,{scope:"col"},"Default"),l.createElement(L,{scope:"col"},"Control"),l.createElement(L,{scope:"col"},"Actions"))),l.createElement(Ce,null,de.map(({category:t,properties:a})=>l.createElement(l.Fragment,{key:t||"uncategorized"},t&&l.createElement(we,null,l.createElement(_e,{colSpan:4,scope:"colgroup"},t)),a.map(({key:r,value:n})=>{let c=n.control||"text",i=c==="color",p=T[r]!==void 0?T[r]:n.value||"",{color:s,opacity:m}=i?A(p):{color:"",opacity:1},u=i&&O(s),d=i&&(O(s)||j(p||"")||ye(p||""));return l.createElement(Te,{key:r},l.createElement(N,null,l.createElement(Oe,null,r),n.description&&l.createElement(Ie,{id:`${r}-description`},n.description)),l.createElement(N,null,l.createElement(Ae,{className:n.default?"has-value":""},n.default||"\u2013")),l.createElement(N,null,l.createElement(Be,null,i?l.createElement(l.Fragment,null,l.createElement(V,null,l.createElement(ze,null,l.createElement(Re,{ref:o=>{S.current[r]=o},color:u?z(s,m):p||"#000000",role:"button",tabIndex:0,"aria-label":`Color swatch for ${r}. Current color: ${p||"not set"}. Click to open color picker.`,onKeyDown:o=>{if(o.key==="Enter"||o.key===" "){o.preventDefault();let h=E.current[r];h&&h.click()}}},l.createElement(Pe,{ref:o=>{E.current[r]=o},id:r,type:"color",value:u?s:"#000000",onChange:o=>ue(r,o.target.value),"aria-label":`Color picker for ${r}`,"aria-describedby":n.description?`${r}-description`:void 0})),l.createElement(Me,{ref:o=>{_.current[r]=o},type:"text",value:p,onChange:o=>me(r,o.target.value),placeholder:"Enter color","aria-label":`Color value for ${r}`,"aria-describedby":n.description?`${r}-description`:void 0}))),d&&l.createElement(V,null,l.createElement(Le,{htmlFor:`${r}-opacity`},"Opacity:"),l.createElement(q,{ref:o=>{$.current[r]=o},id:`${r}-opacity`,type:"range",min:"0",max:"1",step:"0.01",value:m.toString(),onChange:o=>he(r,parseFloat(o.target.value)),"aria-label":`Opacity for ${r}`,"aria-valuetext":`${Math.round(m*100)} percent`,"aria-describedby":`${r}-opacity-value`}),l.createElement(Ne,{ref:o=>{x.current[r]=o},id:`${r}-opacity-value`},Math.round(m*100),"%"))):l.createElement(V,null,l.createElement(q,{ref:o=>{E.current[r]=o},id:r,type:c,value:p,onChange:o=>pe(r,o.target.value),placeholder:`Enter ${c}`,step:c==="number"?1:void 0,"aria-label":`${c} input for ${r}`,"aria-describedby":n.description?`${r}-description`:void 0})))),l.createElement(N,null,l.createElement(ne,null,l.createElement(le,{onClick:()=>F(r),title:"Use component default","aria-controls":r,"aria-describedby":"clear-label"},"Clear"),l.createElement(le,{onClick:()=>H(r),title:"Use story default","aria-controls":r,"aria-describedby":"reset-label"},"Reset"))))})))))))});function se(e){return e.startsWith("--")}function De(e){let f=0;return Object.entries(e).forEach(([b,E])=>{se(b)?f++:Object.keys(E).forEach($=>{se($)&&f++})}),f}function Qe(){let e=te().getSelectedPanel(),f=Y(ie,{}),b=De(f);return l.createElement("div",{style:{display:"flex",alignItems:"center",gap:6}},l.createElement("span",null,"CSS Properties"),b===0?null:l.createElement(ae,{compact:!0,status:e===ce?"active":"neutral"},b))}K.register(Z,e=>{K.add(ce,{type:ee.PANEL,title:Qe,match:({viewMode:f})=>f==="story",render:({active:f})=>l.createElement(He,{active:f??!1})})});})();
 }catch(e){ console.error("[Storybook] One of your manager-entries failed: " + import.meta.url, e); }
