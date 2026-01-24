@@ -1,5 +1,8 @@
 # Storybook Addon CSS Properties
 
+> [!NOTE]
+> This project has been archived due to lack of maintenance and several bugs within Storybook causing issues with applying CSS property values. This is easily achieved with an addon by setting the CSS properties to the `args.style` attribute for your stories.
+
 Edit CSS properties defined in your component to see how stories react
 
 [See example](https://jackdomleo7.github.io/storybook-addon-css-properties)
